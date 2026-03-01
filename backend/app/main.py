@@ -11,6 +11,7 @@ from app.api import health
 from app.api import jobs
 from app.api import graph
 from app.api import resume
+from app.api import student
 
 
 @asynccontextmanager
@@ -58,6 +59,7 @@ app.include_router(health.router, prefix="/health")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(graph.router, prefix="/api")
 app.include_router(resume.router, prefix="/api")
+app.include_router(student.router, prefix="/api")
 
 
 @app.get("/")
