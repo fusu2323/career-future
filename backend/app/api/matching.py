@@ -4,7 +4,8 @@ Matching and Gap Analysis API
 Endpoints for job matching and gap analysis.
 """
 from fastapi import APIRouter, HTTPException, Body, Query
-from typing import Dict, Any, List
+from pydantic import BaseModel
+from typing import Dict, Any, List, Optional
 
 from app.services.gap_analysis import (
     analyze_skill_gap,
@@ -13,6 +14,10 @@ from app.services.gap_analysis import (
     full_gap_analysis
 )
 from app.core.matching import calculate_match, batch_calculate_match
+from app.services.recommendation import (
+    generate_recommendations,
+    get_recommendation_with_gap
+)
 
 router = APIRouter(prefix="/matching", tags=["Matching"])
 
@@ -153,5 +158,104 @@ async def gap_analysis_example():
                 "not_learned_count": 4,
                 "match_rate": 0.33
             }
+        }
+    }
+
+
+class RecommendationRequest(BaseModel):
+    """Recommendation request model"""
+    student_profile: Dict[str, Any]
+    filters: Optional[Dict[str, Any]] = None
+    top_n: int = 10
+    page: int = 1
+    page_size: int = 20
+
+
+class RecommendationResponse(BaseModel):
+    """Recommendation response model"""
+    results: List[Dict[str, Any]]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    processing_time_ms: float
+
+
+@router.post("/recommend", response_model=RecommendationResponse)
+async def get_recommendations(request: RecommendationRequest):
+    """
+    Get job recommendations for a student.
+
+    - **student_profile**: Student's complete profile
+    - **filters**: Optional filter criteria:
+        - city: Target city (e.g., "北京", "深圳")
+        - min_salary: Minimum monthly salary
+        - max_salary: Maximum monthly salary
+        - job_category: Job category
+        - industry: Industry
+    - **top_n**: Number of top recommendations to return (default: 10)
+    - **page**: Page number for pagination (default: 1)
+    - **page_size**: Results per page (default: 20)
+
+    Returns job recommendations sorted by match score (descending).
+    """
+    try:
+        result = generate_recommendations(
+            student_profile=request.student_profile,
+            filters=request.filters,
+            top_n=request.top_n,
+            page=request.page,
+            page_size=request.page_size
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Recommendation failed: {str(e)}")
+
+
+@router.get("/recommend/example")
+async def recommend_example():
+    """
+    Get example of recommendation API.
+    """
+    return {
+        "example_request": {
+            "student_profile": {
+                "name": "张三",
+                "education": [{"degree": "本科", "end_date": "2026-06"}],
+                "target_city": "北京",
+                "mastered_skills": ["Python", "Java", "MySQL"],
+                "dimensions": {
+                    "base": {"score": 80, "details": {}},
+                    "skill": {"score": 75, "details": {}},
+                    "soft": {"score": 70, "details": {}},
+                    "potential": {"score": 85, "details": {}}
+                }
+            },
+            "filters": {"city": "北京", "job_category": "互联网"},
+            "top_n": 10,
+            "page": 1,
+            "page_size": 20
+        },
+        "example_response": {
+            "results": [
+                {
+                    "job_id": "1",
+                    "job_name": "Python 开发工程师",
+                    "company": "某某科技",
+                    "city": "北京",
+                    "match_score": 85.5,
+                    "dimensions": {
+                        "base": 80,
+                        "skill": 85,
+                        "soft": 75,
+                        "potential": 90
+                    }
+                }
+            ],
+            "total": 10,
+            "page": 1,
+            "page_size": 20,
+            "total_pages": 1,
+            "processing_time_ms": 150.5
         }
     }
