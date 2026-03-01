@@ -264,3 +264,238 @@ async def bulk_generate_profiles(resume_data_list: list = Body(...)):
             })
 
     return {"results": results, "total": len(results)}
+
+
+# ========== Step-by-Step Form Endpoints ==========
+
+@router.post("/draft/save")
+async def save_draft(request: DraftSaveRequest):
+    """
+    Save form draft data for step-by-step submission.
+
+    - **step**: Current step number (1-5)
+    - **data**: Step data
+
+    Returns draft_id for later submission.
+    """
+    draft_id = f"draft_{datetime.now().strftime('%Y%m%d%H%M%S')}_{os.getpid()}"
+
+    # Initialize draft storage
+    draft_storage[draft_id] = {
+        "current_step": request.step,
+        "steps": {str(request.step): request.data},
+        "created_at": datetime.now().isoformat(),
+        "updated_at": datetime.now().isoformat()
+    }
+
+    return {
+        "draft_id": draft_id,
+        "current_step": request.step,
+        "message": "Draft saved successfully"
+    }
+
+
+@router.post("/draft/update")
+async def update_draft(draft_id: str, request: DraftSaveRequest):
+    """
+    Update existing draft with new step data.
+
+    - **draft_id**: Draft ID from save_draft
+    - **step**: Current step number (1-5)
+    - **data**: Step data
+    """
+    if draft_id not in draft_storage:
+        raise HTTPException(status_code=404, detail="Draft not found")
+
+    draft = draft_storage[draft_id]
+    draft["steps"][str(request.step)] = request.data
+    draft["current_step"] = request.step
+    draft["updated_at"] = datetime.now().isoformat()
+
+    return {
+        "draft_id": draft_id,
+        "current_step": request.step,
+        "message": "Draft updated successfully"
+    }
+
+
+@router.get("/draft/{draft_id}")
+async def get_draft(draft_id: str):
+    """
+    Get draft data by ID.
+
+    Returns all saved step data.
+    """
+    if draft_id not in draft_storage:
+        raise HTTPException(status_code=404, detail="Draft not found")
+
+    draft = draft_storage[draft_id]
+    return {
+        "draft_id": draft_id,
+        "current_step": draft["current_step"],
+        "steps": draft["steps"],
+        "created_at": draft["created_at"],
+        "updated_at": draft["updated_at"]
+    }
+
+
+@router.post("/manual-input", response_model=StudentProfile)
+async def submit_manual_input(request: DraftSubmitRequest):
+    """
+    Submit final form data and generate student profile.
+
+    This endpoint collects all step data from draft and generates
+    a student profile with the same format as resume parsing.
+
+    - **draft_id**: Draft ID from save_draft/update_draft
+
+    **Step 1**: Basic Info (name, email, phone)
+    **Step 2**: Education (school, major, degree, graduation_year)
+    **Step 3**: Skills (skills list)
+    **Step 4**: Experience (projects, internships)
+    **Step 5**: Additional (certificates, awards, self_evaluation, target_city, target_salary)
+    """
+    if draft_id not in draft_storage:
+        raise HTTPException(status_code=404, detail="Draft not found")
+
+    draft = draft_storage[draft_id]
+    steps = draft["steps"]
+
+    try:
+        # Combine all step data
+        step1 = steps.get("1", {})
+        step2 = steps.get("2", {})
+        step3 = steps.get("3", {})
+        step4 = steps.get("4", {})
+        step5 = steps.get("5", {})
+
+        # Build resume-like data structure
+        resume_data = {
+            "name": step1.get("name", "Unknown"),
+            "email": step1.get("email"),
+            "phone": step1.get("phone"),
+            "education": [
+                {
+                    "school": step2.get("school", "Unknown"),
+                    "major": step2.get("major", "Unknown"),
+                    "degree": step2.get("degree", "本科"),
+                    "start_date": step2.get("start_date", f"{step2.get('graduation_year', 2025) - 4}-09"),
+                    "end_date": f"{step2.get('graduation_year', 2025)}-06"
+                }
+            ],
+            "skills": step3.get("skills", []),
+            "projects": step4.get("projects", []),
+            "internships": step4.get("internships", []),
+            "certificates": step5.get("certificates", []),
+            "awards": step5.get("awards", []),
+            "self_evaluation": step5.get("self_evaluation", ""),
+            "target_city": step5.get("target_city"),
+            "target_salary": step5.get("target_salary")
+        }
+
+        # Generate profile
+        profile = generate_student_profile(resume_data)
+
+        # Store in database
+        student_profiles_db[profile.student_id] = {
+            "resume_id": "manual_input",
+            "draft_id": draft_id,
+            "profile": profile.model_dump(),
+            "created_at": datetime.now().isoformat()
+        }
+
+        # Clean up draft
+        del draft_storage[draft_id]
+
+        return profile
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate profile: {str(e)}")
+
+
+@router.delete("/draft/{draft_id}")
+async def delete_draft(draft_id: str):
+    """
+    Delete a draft.
+    """
+    if draft_id not in draft_storage:
+        raise HTTPException(status_code=404, detail="Draft not found")
+
+    del draft_storage[draft_id]
+    return {"message": "Draft deleted successfully", "draft_id": draft_id}
+
+
+@router.get("/form/schema")
+async def get_form_schema():
+    """
+    Get form schema for frontend rendering.
+
+    Returns form structure with fields for each step.
+    """
+    return {
+        "steps": [
+            {
+                "step": 1,
+                "title": "基本信息",
+                "fields": [
+                    {"name": "name", "type": "text", "label": "姓名", "required": True},
+                    {"name": "email", "type": "email", "label": "邮箱", "required": False},
+                    {"name": "phone", "type": "tel", "label": "电话", "required": False},
+                    {"name": "gender", "type": "select", "label": "性别", "options": ["男", "女"], "required": False},
+                    {"name": "birth_date", "type": "date", "label": "出生日期", "required": False}
+                ]
+            },
+            {
+                "step": 2,
+                "title": "教育信息",
+                "fields": [
+                    {"name": "school", "type": "text", "label": "学校", "required": True},
+                    {"name": "major", "type": "text", "label": "专业", "required": True},
+                    {"name": "degree", "type": "select", "label": "学历", "options": ["专科", "本科", "硕士", "博士"], "required": True},
+                    {"name": "graduation_year", "type": "number", "label": "毕业年份", "required": True},
+                    {"name": "start_date", "type": "date", "label": "入学日期", "required": False},
+                    {"name": "gpa", "type": "text", "label": "GPA", "required": False}
+                ]
+            },
+            {
+                "step": 3,
+                "title": "专业技能",
+                "fields": [
+                    {"name": "skills", "type": "tags", "label": "技能列表", "placeholder": "输入技能后按回车添加", "required": False},
+                    {"name": "skill_levels", "type": "object", "label": "技能水平", "required": False}
+                ]
+            },
+            {
+                "step": 4,
+                "title": "实践经历",
+                "fields": [
+                    {"name": "projects", "type": "array", "label": "项目经历", "fields": [
+                        {"name": "name", "type": "text", "label": "项目名称"},
+                        {"name": "role", "type": "text", "label": "担任角色"},
+                        {"name": "start_date", "type": "date", "label": "开始日期"},
+                        {"name": "end_date", "type": "date", "label": "结束日期"},
+                        {"name": "description", "type": "textarea", "label": "项目描述"},
+                        {"name": "technologies", "type": "tags", "label": "使用技术"}
+                    ]},
+                    {"name": "internships", "type": "array", "label": "实习经历", "fields": [
+                        {"name": "company", "type": "text", "label": "公司名称"},
+                        {"name": "position", "type": "text", "label": "职位"},
+                        {"name": "start_date", "type": "date", "label": "开始日期"},
+                        {"name": "end_date", "type": "date", "label": "结束日期"},
+                        {"name": "description", "type": "textarea", "label": "工作描述"}
+                    ]}
+                ]
+            },
+            {
+                "step": 5,
+                "title": "其他信息",
+                "fields": [
+                    {"name": "certificates", "type": "tags", "label": "证书", "required": False},
+                    {"name": "awards", "type": "tags", "label": "奖项", "required": False},
+                    {"name": "self_evaluation", "type": "textarea", "label": "自我评价", "required": False},
+                    {"name": "target_city", "type": "text", "label": "意向城市", "required": False},
+                    {"name": "target_salary", "type": "number", "label": "期望薪资", "required": False}
+                ]
+            }
+        ]
+    }
