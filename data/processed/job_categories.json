@@ -1,0 +1,56 @@
+{
+  "互联网技术": {
+    "category": "互联网技术",
+    "job_count": 1627,
+    "top_skills": [
+      "Big Data",
+      "Cloud",
+      "Product Management",
+      "UI/UX"
+    ],
+    "top_certificates": [],
+    "most_common_education": "不限",
+    "most_common_experience": "不限",
+    "top_cities": [
+      "北京-海淀区",
+      "成都-武侯区",
+      "石家庄-裕华区",
+      "西安-雁塔区",
+      "济南-历下区"
+    ],
+    "avg_salary": 22114.0,
+    "soft_skills": {
+      "communication": 0.6,
+      "teamwork": 0.7,
+      "pressure_tolerance": 0.5,
+      "learning_ability": 0.6
+    }
+  },
+  "其他": {
+    "category": "其他",
+    "job_count": 7804,
+    "top_skills": [
+      "UI/UX",
+      "Big Data",
+      "Cloud",
+      "Product Management"
+    ],
+    "top_certificates": [],
+    "most_common_education": "不限",
+    "most_common_experience": "不限",
+    "top_cities": [
+      "北京-海淀区",
+      "北京-朝阳区",
+      "郑州-金水区",
+      "深圳-龙岗区",
+      "西安-雁塔区"
+    ],
+    "avg_salary": 15863.0,
+    "soft_skills": {
+      "communication": 0.6,
+      "teamwork": 0.7,
+      "pressure_tolerance": 0.5,
+      "learning_ability": 0.6
+    }
+  }
+}

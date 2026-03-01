@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.services.neo4j_db import init_neo4j_database, close_neo4j_driver
 from app.api import health
+from app.api import jobs
+from app.api import graph
 
 
 @asynccontextmanager
@@ -52,6 +54,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health.router, prefix="/health")
+app.include_router(jobs.router, prefix="/api")
+app.include_router(graph.router, prefix="/api")
 
 
 @app.get("/")
