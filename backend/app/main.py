@@ -12,6 +12,7 @@ from app.api import jobs
 from app.api import graph
 from app.api import resume
 from app.api import student
+from app.api import matching
 
 
 @asynccontextmanager
@@ -60,6 +61,7 @@ app.include_router(jobs.router, prefix="/api")
 app.include_router(graph.router, prefix="/api")
 app.include_router(resume.router, prefix="/api")
 app.include_router(student.router, prefix="/api")
+app.include_router(matching.router, prefix="/api")
 
 
 @app.get("/")
