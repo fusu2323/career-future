@@ -1,0 +1,495 @@
+[
+  {
+    "job_type": "Java",
+    "professional_skills": {
+      "core_skills": [
+        "Java",
+        "Spring",
+        "SpringBoot",
+        "MyBatis",
+        "SpringCloud",
+        "SQL",
+        "MySQL",
+        "Oracle",
+        "Linux"
+      ],
+      "soft_skills": [
+        "团队协作与沟通",
+        "技术问题解决",
+        "需求分析",
+        "系统设计与开发",
+        "文档编写"
+      ],
+      "tools_frameworks": [
+        "Redis",
+        "MQ",
+        "Kafka",
+        "Hadoop",
+        "Spark",
+        "Vue",
+        "uni-app"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": [
+        "日语N2",
+        "日语N3"
+      ]
+    },
+    "innovation_ability": 3,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 4,
+    "internship_importance": 3,
+    "summary": "专注于Java后端开发，需具备3-5年经验，掌握Spring生态及数据库技术，强调系统设计、问题解决和团队协作能力。",
+    "source_record_count": 537,
+    "avg_salary_min": 1833.33,
+    "avg_salary_max": 3166.67
+  },
+  {
+    "job_type": "科研人员",
+    "professional_skills": {
+      "core_skills": [
+        "数据分析",
+        "实验设计",
+        "分子生物学",
+        "NGS技术",
+        "HPLC鉴定",
+        "人工智能",
+        "数字化转型"
+      ],
+      "soft_skills": [
+        "沟通能力",
+        "团队协作",
+        "项目管理",
+        "英文写作"
+      ],
+      "tools_frameworks": [
+        "软件操作",
+        "混凝土设计",
+        "机械设计"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": []
+    },
+    "innovation_ability": 4,
+    "learning_ability": 5,
+    "stress_resistance": 4,
+    "communication_ability": 4,
+    "internship_importance": 3,
+    "summary": "科研人员岗位要求具备扎实的数据分析、实验设计和跨学科技术能力，强调创新思维、持续学习和团队协作，适合具备硕士以上学历、能适应快节奏科研环境的专业人才。",
+    "source_record_count": 535,
+    "avg_salary_min": 2917.0,
+    "avg_salary_max": 4167.0
+  },
+  {
+    "job_type": "测试工程师",
+    "professional_skills": {
+      "core_skills": [
+        "软件测试",
+        "测试用例编写",
+        "测试报告编写",
+        "自动化测试",
+        "接口测试",
+        "性能测试",
+        "硬件测试"
+      ],
+      "soft_skills": [
+        "问题分析与解决",
+        "团队协作",
+        "文档编写能力",
+        "流程改进意识"
+      ],
+      "tools_frameworks": [
+        "Python",
+        "LabVIEW",
+        "仪器仪表",
+        "数据采集工具"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": []
+    },
+    "innovation_ability": 2,
+    "learning_ability": 4,
+    "stress_resistance": 3,
+    "communication_ability": 4,
+    "internship_importance": 4,
+    "summary": "入门级测试工程师岗位，注重基础测试技能、文档编写和团队协作能力，对学历和经验要求相对宽松，适合应届生或转行人员。",
+    "source_record_count": 504,
+    "avg_salary_min": 5500,
+    "avg_salary_max": 8500
+  },
+  {
+    "job_type": "技术支持工程师",
+    "professional_skills": {
+      "core_skills": [
+        "技术支持",
+        "售后服务",
+        "设备安装调试",
+        "故障排除",
+        "售前支持",
+        "软件配置",
+        "系统集成"
+      ],
+      "soft_skills": [
+        "客户沟通",
+        "问题解决",
+        "跨部门协调",
+        "项目管理",
+        "客户培训"
+      ],
+      "tools_frameworks": [
+        "CAD/Solidworks",
+        "相关设备调试工具",
+        "办公软件"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": []
+    },
+    "innovation_ability": 2,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 5,
+    "internship_importance": 4,
+    "summary": "以客户为中心，具备全流程技术支持能力，强调沟通协调和问题解决的综合型技术岗位。",
+    "source_record_count": 482,
+    "avg_salary_min": 5167,
+    "avg_salary_max": 9167
+  },
+  {
+    "job_type": "实施工程师",
+    "professional_skills": {
+      "core_skills": [
+        "软件系统安装部署",
+        "项目调试",
+        "技术支持",
+        "客户培训",
+        "文档编写"
+      ],
+      "soft_skills": [
+        "沟通协调能力",
+        "客户服务意识",
+        "团队协作能力",
+        "问题解决能力"
+      ],
+      "tools_frameworks": [
+        "数据库（Oracle/MySQL/PostgreSQL）",
+        "CAD软件",
+        "网络技术",
+        "工业互联网技术",
+        "自动化工具"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": [
+        "ORACLE认证",
+        "SQL Server认证"
+      ]
+    },
+    "innovation_ability": 2,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 5,
+    "internship_importance": 3,
+    "summary": "面向客户的技术实施与支持岗位，强调沟通协调、现场调试和持续学习能力，需适应频繁出差和项目驻点工作模式。",
+    "source_record_count": 478,
+    "avg_salary_min": 4833,
+    "avg_salary_max": 7583
+  },
+  {
+    "job_type": "软件测试",
+    "professional_skills": {
+      "core_skills": [
+        "功能测试",
+        "测试用例设计",
+        "测试计划",
+        "缺陷管理",
+        "自动化测试",
+        "接口测试",
+        "性能测试",
+        "安全测试",
+        "数据测试"
+      ],
+      "soft_skills": [
+        "需求分析评审",
+        "技术支持与协作",
+        "测试报告编写",
+        "缺陷跟踪管理"
+      ],
+      "tools_frameworks": [
+        "Selenium",
+        "LoadRunner",
+        "Postman",
+        "Docker",
+        "Jenkins",
+        "Git",
+        "Python",
+        "Java",
+        "C语言",
+        "Shell"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": []
+    },
+    "innovation_ability": 3,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 4,
+    "internship_importance": 4,
+    "summary": "面向0-2年经验、本科为主的初级测试岗位，强调功能测试、用例设计和缺陷管理等基础能力，同时需具备自动化、性能等专项测试技能及协作沟通能力。",
+    "source_record_count": 411,
+    "avg_salary_min": 5833,
+    "avg_salary_max": 8333
+  },
+  {
+    "job_type": "C/C++",
+    "professional_skills": {
+      "core_skills": [
+        "C/C++编程",
+        "数据结构与算法",
+        "多线程编程",
+        "TCP/IP网络编程",
+        "嵌入式开发",
+        "Windows编程"
+      ],
+      "soft_skills": [
+        "问题分析与解决",
+        "团队协作与沟通",
+        "技术文档编写",
+        "项目测试与调试"
+      ],
+      "tools_frameworks": [
+        "Qt",
+        "AUTOSAR",
+        "SQL数据库",
+        "CAN/LIN/ETH通信协议"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": []
+    },
+    "innovation_ability": 3,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 4,
+    "internship_importance": 4,
+    "summary": "面向0-3年经验开发者的基础C/C++岗位，强调软件全周期开发能力与团队协作，薪资中等偏下，适合入门级技术人员积累项目经验。",
+    "source_record_count": 370,
+    "avg_salary_min": 2500.0,
+    "avg_salary_max": 5000.0
+  },
+  {
+    "job_type": "前端开发",
+    "professional_skills": {
+      "core_skills": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Vue",
+        "React",
+        "前端框架",
+        "HTML5",
+        "CSS3"
+      ],
+      "soft_skills": [
+        "团队协作",
+        "沟通能力",
+        "文档编写",
+        "问题解决"
+      ],
+      "tools_frameworks": [
+        "Vue",
+        "React",
+        "webpack",
+        "ElementUI",
+        "AntDesign",
+        "小程序",
+        "Node",
+        "TypeScript"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": [
+        "日本语能力2级"
+      ]
+    },
+    "innovation_ability": 3,
+    "learning_ability": 4,
+    "stress_resistance": 3,
+    "communication_ability": 4,
+    "internship_importance": 4,
+    "summary": "面向初级开发者的前端岗位，强调基础技术栈掌握、团队协作与快速学习能力，薪资范围适中，对实习经验较为看重。",
+    "source_record_count": 243,
+    "avg_salary_min": 4167,
+    "avg_salary_max": 6250
+  },
+  {
+    "job_type": "硬件测试",
+    "professional_skills": {
+      "core_skills": [
+        "测试方案设计",
+        "测试计划制定",
+        "测试用例设计",
+        "功能测试",
+        "可靠性测试",
+        "环境测试",
+        "安全测试",
+        "测试数据分析",
+        "问题定位解决",
+        "测试报告编写"
+      ],
+      "soft_skills": [
+        "问题解决能力",
+        "分析能力",
+        "团队协作",
+        "文档编写能力"
+      ],
+      "tools_frameworks": [
+        "测试仪器和设备",
+        "示波器",
+        "信号发生器",
+        "频谱仪",
+        "Office办公软件",
+        "Python/C编程"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": [
+        "英语四级"
+      ]
+    },
+    "innovation_ability": 2,
+    "learning_ability": 3,
+    "stress_resistance": 4,
+    "communication_ability": 3,
+    "internship_importance": 4,
+    "summary": "专注于新产品研发阶段的系统性测试验证，要求具备全面的测试方案设计、执行与问题分析能力，适合入门级技术人才发展。",
+    "source_record_count": 234,
+    "avg_salary_min": 5833,
+    "avg_salary_max": 8333
+  },
+  {
+    "job_type": "管培生/储备干部",
+    "professional_skills": {
+      "core_skills": [
+        "销售技巧",
+        "市场分析与策略制定",
+        "客户开发与维护",
+        "项目执行与跟进",
+        "文档/报告编写"
+      ],
+      "soft_skills": [
+        "沟通能力",
+        "学习能力",
+        "抗压能力",
+        "协调能力",
+        "团队合作",
+        "责任心",
+        "逻辑思维",
+        "应变能力"
+      ],
+      "tools_frameworks": []
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": [
+        "英语四级",
+        "英语六级"
+      ]
+    },
+    "innovation_ability": 3,
+    "learning_ability": 5,
+    "stress_resistance": 4,
+    "communication_ability": 5,
+    "internship_importance": 5,
+    "summary": "面向应届毕业生的综合培养岗位，强调快速学习、沟通协调和抗压能力，通过轮岗机制培养未来管理人才。",
+    "source_record_count": 147,
+    "avg_salary_min": 5833,
+    "avg_salary_max": 8833
+  },
+  {
+    "job_type": "销售工程师",
+    "professional_skills": {
+      "core_skills": [
+        "客户开发与维护",
+        "商务谈判",
+        "市场分析",
+        "技术知识",
+        "产品推广与技术支持"
+      ],
+      "soft_skills": [
+        "沟通能力",
+        "团队合作",
+        "抗压能力",
+        "出差适应"
+      ],
+      "tools_frameworks": [
+        "C1驾照",
+        "英语能力",
+        "韩语能力"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [
+        "C1驾照"
+      ],
+      "preferred": []
+    },
+    "innovation_ability": 3,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 5,
+    "internship_importance": 4,
+    "summary": "销售工程师是兼具技术背景与销售能力的复合型人才，核心在于通过专业沟通实现客户开发与产品推广，需适应频繁出差并具备较强抗压能力。",
+    "source_record_count": 146,
+    "avg_salary_min": 6250,
+    "avg_salary_max": 10833
+  },
+  {
+    "job_type": "内容审核",
+    "professional_skills": {
+      "core_skills": [
+        "风险识别",
+        "内容质量评估",
+        "文字功底",
+        "电脑操作"
+      ],
+      "soft_skills": [
+        "责任心",
+        "细心",
+        "抗压能力",
+        "沟通能力"
+      ],
+      "tools_frameworks": [
+        "办公软件",
+        "审核系统"
+      ]
+    },
+    "certificate_requirements": {
+      "required": [],
+      "preferred": []
+    },
+    "innovation_ability": 2,
+    "learning_ability": 4,
+    "stress_resistance": 4,
+    "communication_ability": 3,
+    "internship_importance": 5,
+    "summary": "入门级内容安全岗位，注重责任心、细心和抗压能力，通过带薪培训快速上岗，适合零经验求职者。",
+    "source_record_count": 146,
+    "avg_salary_min": 4333,
+    "avg_salary_max": 6167
+  }
+]
