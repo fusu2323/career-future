@@ -63,7 +63,7 @@ def test_skill_coverage(job_profiles_path, jobs_cleaned_path):
 
     # Build a corpus of raw skill mentions from all jobs
     all_job_text = " ".join(
-        job.get("job_detail_cleaned", "") + " " + job.get("岗位名称", "")
+        (job.get("job_detail_cleaned") or "") + " " + (job.get("岗位名称") or "")
         for job in jobs
     ).lower()
 
