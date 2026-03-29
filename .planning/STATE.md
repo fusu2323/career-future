@@ -1,3 +1,16 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: unknown
+last_updated: "2026-03-29T17:48:50.990Z"
+progress:
+  total_phases: 3
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 5
+---
+
 # 项目状态
 
 **项目：** 基于AI的大学生职业规划智能体
