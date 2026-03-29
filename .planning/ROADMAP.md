@@ -77,6 +77,11 @@
 **依赖：** Phase 1, Phase 2
 **并行可执行：** 否
 
+**计划：**
+- [ ] 03-01-PLAN.md — Test infrastructure (tests/phase03/)
+- [ ] 03-02-PLAN.md — Job profiling script with dual storage
+- [ ] 03-03-PLAN.md — Verification checkpoint
+
 ---
 
 ### Phase 4：岗位图谱构建
