@@ -1,0 +1,22 @@
+{
+  "total_input_records": 9958,
+  "total_output_records": 9178,
+  "duplicate_count": 780,
+  "dataset_completeness_rate": 92.17,
+  "field_fill_rates": {
+    "salary_min_monthly": 97.43,
+    "salary_max_monthly": 97.5,
+    "city": 100.0,
+    "district": 96.61,
+    "company_size_min": 94.94,
+    "company_size_max": 78.11,
+    "industry_tags": 99.98,
+    "industry_primary": 99.98,
+    "job_detail_cleaned": 98.51
+  },
+  "salary_standardization_coverage": 97.43,
+  "quality_distribution": {
+    "complete": 9041,
+    "incomplete": 137
+  }
+}
