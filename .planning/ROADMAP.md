@@ -58,6 +58,9 @@
 **依赖：** Phase 1
 **并行可执行：** 否（依赖清洗后的数据）
 
+**计划：**
+- [x] 02-01-PLAN.md — ChromaDB vector index with BGE-large-zh embedding
+
 ---
 
 ### Phase 3：岗位画像构建
