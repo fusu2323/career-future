@@ -58,8 +58,13 @@
 **依赖：** Phase 1
 **并行可执行：** 否（依赖清洗后的数据）
 
+**执行结果：**
+- 计划：1个（Plan 1）
+- 完成：1个（Plan 1）
+- 输出：9178条岗位记录索引至ChromaDB，BGE-m3嵌入（1024-dim），Top10召回率100%
+
 **计划：**
-- [x] 02-01-PLAN.md — ChromaDB vector index with BGE-large-zh embedding
+- [x] 02-01-PLAN.md — ChromaDB vector index with BGE-m3 embedding (SiliconFlow API) ✓
 
 ---
 
