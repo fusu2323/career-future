@@ -128,8 +128,8 @@
 **并行可执行：** 是
 
 **Plans:**
-- [ ] 05-01-PLAN.md — Core service infrastructure (models, client, exceptions, config, service layer)
-- [ ] 05-02-PLAN.md — Router endpoints + health check
+- [x] 05-01-PLAN.md — Core service infrastructure (models, client, exceptions, config, service layer)
+- [x] 05-02-PLAN.md — Router endpoints + health check
 - [ ] 05-03-PLAN.md — Unit and integration tests
 
 ---

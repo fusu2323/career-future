@@ -3,19 +3,19 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Executing Phase 05
-last_updated: "2026-03-30T14:24:03.520Z"
+last_updated: "2026-03-30T14:29:00Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # 项目状态
 
 **项目：** 基于AI的大学生职业规划智能体
 **当前阶段：** 5 - LLM服务封装
-**当前计划：** 05-01 (Core Service Infrastructure)
+**当前计划：** 05-02 (Router Endpoints + Health Check)
 **模式：** YOLO
 
 ## 项目参考
@@ -33,7 +33,7 @@ progress:
 | 2 | 岗位向量数据库构建 | ● 完成 | 100% (1/1) | Phase 1 |
 | 3 | 岗位画像构建 | ● 完成 | 100% (3/3) | Phase 1, 2 |
 | 4 | 岗位图谱构建 | ◐ 已规划 | 1/1 | Phase 1, 3 |
-| 5 | LLM服务封装 | ◐ 进行中 | 1/3 | — |
+| 5 | LLM服务封装 | ◐ 进行中 | 2/3 | — |
 | 6 | 简历解析服务 | ○ 待启动 | 0% | Phase 5 |
 | 7 | 学生能力画像生成 | ○ 待启动 | 0% | Phase 5, 6 |
 | 8 | 人岗匹配引擎 | ○ 待启动 | 0% | Phase 3, 7 |
@@ -63,7 +63,8 @@ progress:
 - **Phase 3 画像**：12个岗位画像/professional_skills分core/soft/tools三层/7维度评分1-10分/avg_salary为min-max范围/innovation_learning抗压沟通实习重要性各维度/Neo4j节点未写入（Phase 4需处理）
 - **Phase 4 图谱**：Neo4j库planer(neo4j/fusu2023yzcm)/单图双关系PROMOTES_TO+TRANSITIONS_TO/职级节点初级-中级-高级拆分/LLM生成晋升+换岗路径/全量清理MATCH (n) DETACH DELETE n
 - **Phase 5 LLM服务**：DeepSeek deepseek-chat/base_url https://api.deepseek.com/HTTP retry 3x (1s/2s/4s backoff)/retry on 5xx/503/429/timeout, NOT on 400/401/per-task timeout (profile=15s, match=20s, report=45s)/JSON parse retry 1-2x/asyncio.to_thread for sync SDK
+- **Phase 5 Plan 2 路由**：POST /llm/profile/generate|/llm/match/analyze|/llm/report/generate (task_type implicit per path)/GET /health (liveness, no DeepSeek)/GET /health/ready (readiness probe, max_tokens=5, timeout=5s)/返回503 if DeepSeek unreachable/_handle_llm_error() DRY helper maps 504/422/502
 
 ---
 *状态文件：2026-03-29 初始化*
-*最后更新：2026-03-30 Phase 5 Plan 1 执行完成*
+*最后更新：2026-03-30 Phase 5 Plan 2 执行完成*
