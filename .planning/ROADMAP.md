@@ -42,7 +42,7 @@
 Plans:
 - [x] 06-01-PLAN.md — Wave 1: Install pdfplumber, create Pydantic resume models, set up test fixtures
 - [x] 06-02-PLAN.md — Wave 2: Create resume router skeleton and register in main.py (depends on 06-01)
-- [ ] 06-03-PLAN.md — Wave 3: Implement LLM endpoint logic with self-correction + integration tests (depends on 06-02)
+- [x] 06-03-PLAN.md — Wave 3: Implement LLM endpoint logic with self-correction + integration tests (depends on 06-02)
 
 ### Phase 7: 学生能力画像
 
