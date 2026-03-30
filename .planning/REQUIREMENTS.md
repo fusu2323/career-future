@@ -110,10 +110,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1.1 requirements: 21 total
-- Mapped to phases: 0 (roadmap TBD)
-- Unmapped: 21 — awaiting roadmap creation
+- Mapped to phases: 21/21
+- Unmapped: 0
+
+---
+
+## Phase Mapping Summary
+
+| Phase | Requirements | Count |
+|-------|-------------|-------|
+| Phase 6 | STU-01, STU-02, STU-03, STU-04, STU-05 | 5 |
+| Phase 7 | STU-06, STU-07 | 2 |
+| Phase 8 | MATCH-01, MATCH-02, MATCH-03 | 3 |
+| Phase 9 | REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05 | 5 |
+| Phase 10 | UI-01, UI-02, UI-03, UI-04, UI-05 | 5 |
 
 ---
 
 *Requirements defined: 2026-03-30*
-*Last updated: 2026-03-30 after v1.1 milestone started*
+*Last updated: 2026-03-30 after v1.1 roadmap created*
