@@ -1,72 +1,119 @@
-# 需求文档：基于AI的大学生职业规划智能体
+# Requirements: 基于AI的大学生职业规划智能体
 
-**制定日期：** 2026-03-29
-**核心价值：** 帮助大学生从"盲目规划"走向"精准匹配"——通过AI分析让学生清楚知道自己"能做什么"、"缺什么"、"该怎么补"。
-
-## v1 需求
-
-### 岗位画像
-
-- [ ] **JOB-01**: 岗位画像构建——从10K条岗位数据中构建≥10个典型岗位画像，每个画像包含：专业技能、证书要求、创新能力、学习能力、抗压能力、沟通能力、实习能力等维度
-- [ ] **JOB-02**: 垂直晋升图谱——基于岗位数据建立晋升路径关联，展示岗位纵向发展路径（如：初级Java开发 → 中级Java开发 → 高级Java开发 → 技术经理）
-- [ ] **JOB-03**: 换岗路径图谱——将相关岗位血缘关联，规划岗位转换路径，覆盖≥5个岗位，每个岗位≥2条换岗路径
-
-### 学生画像
-
-- [ ] **STU-01**: 简历上传与解析——支持PDF/DOCX格式上传，通过LLM自动解析提取就业能力信息
-- [ ] **STU-02**: 手动录入能力——学生自行录入专业技能、证书、实习经历等信息作为画像补充
-- [ ] **STU-03**: 就业能力画像生成——基于简历数据生成7维能力画像（专业技能/证书/创新能力/学习能力/抗压能力/沟通能力/实习能力）
-- [ ] **STU-04**: 画像评分——对就业能力完整度评分（衡量简历信息完整程度）和竞争力评分（基于与岗位池的对比）
-
-### 人岗匹配
-
-- [ ] **MATCH-01**: 四维匹配分析——从基础要求、职业技能、职业素养、发展潜力4个维度量化人岗匹配度
-- [ ] **MATCH-02**: 差距分析——明确呈现学生能力与目标岗位的差距项
-- [ ] **MATCH-03**: 匹配准确率——关键技能匹配准确率≥80%，画像关键信息准确率≥90%
-
-### 职业生涯报告
-
-- [ ] **REPORT-01**: 人岗匹配报告——量化呈现学生与目标岗位的契合度与差距
-- [ ] **REPORT-02**: 职业路径规划——结合职业探索结果与个人意愿，制定清晰的发展路径
-- [ ] **REPORT-03**: 阶段行动计划——短期（3个月内）+ 中期（1年内）个性化成长计划，包含学习路径和实践安排
-- [ ] **REPORT-04**: 动态评估机制——制定评估周期与指标，支持定期调整
-- [ ] **REPORT-05**: 报告优化与导出——智能润色、内容完整性检查、手动编辑调整、一键导出（PDF/Word）
-
-### 技术基础
-
-- [ ] **TECH-01**: LLM调用封装——统一封装DeepSeek API，支持画像生成、匹配分析、报告生成
-- [ ] **TECH-02**: ChromaDB向量索引——将岗位详情、岗位画像、简历文本向量化，支持语义检索
-- [ ] **TECH-03**: Neo4j图谱存储——存储岗位晋升路径与换岗路径，支持路径查询
-- [ ] **TECH-04**: 数据清洗——对原始Excel数据（9958条）进行清洗、去重、标准化处理
-
-### 前端界面
-
-- [ ] **UI-01**: 简历上传页面——拖拽上传，支持PDF/DOCX，实时显示解析进度
-- [ ] **UI-02**: 学生画像展示——可视化呈现7维能力画像与评分
-- [ ] **UI-03**: 岗位浏览与搜索——按行业、薪资、技能关键词筛选岗位
-- [ ] **UI-04**: 晋升/换岗图谱可视化——交互式图谱展示岗位发展路径
-- [ ] **UI-05**: 人岗匹配结果展示——多维度雷达图展示匹配度
-- [ ] **UI-06**: 职业报告展示与编辑——报告在线查看、编辑、导出
-
-## v2 需求
-
-- **V2-01**: 实时招聘数据对接——对接BOSS直聘、智联等平台实时数据
-- **V2-02**: 多轮追问交互——学生对报告结果可追问，LLM持续优化建议
-- **V2-03**: 历史规划对比——记录学生多次测评，呈现成长轨迹
-
-## 排除范围
-
-| 功能 | 排除原因 |
-|------|---------|
-| 用户登录/注册 | 聚焦核心匹配与报告功能 |
-| 移动端原生应用 | 竞赛周期有限，Web端优先 |
-| 简历模板下载 | 非核心功能 |
-| 多语言支持 | 中文单语言 |
-
-## 可追溯性
-
-需求 → 阶段映射将在 ROADMAP.md 中填写。
+**Defined:** 2026-03-30
+**Core Value:** 帮助大学生从"盲目规划"走向"精准匹配"——通过AI分析让学生清楚知道自己"能做什么"、"缺什么"、"该怎么补"。
+**Milestone:** v1.1
 
 ---
-*需求制定：2026-03-29*
-*最后更新：2026-03-29 初始定义*
+
+## v1.1 Requirements
+
+### Resume Parsing (Phase 6)
+
+- [ ] **STU-01**: User can upload PDF or DOCX resume file — 文件上传 endpoint，10MB限制，pdfplumber解析PDF，python-docx解析DOCX
+- [ ] **STU-02**: User receives parsed basic info — 姓名、学历、联系方式 from LLM extraction
+- [ ] **STU-03**: User receives parsed education history — 学校、专业、 GPA（如有）、入学毕业年份
+- [ ] **STU-04**: User receives parsed skills with categorization — core skills / soft skills / tools 三层分类
+- [ ] **STU-05**: User receives parsed experience data — 实习经历、项目经验、课外活动 with 时间 and 描述
+
+### Student Ability Profiling (Phase 7)
+
+- [ ] **STU-06**: System generates 7-dimension student profile — professional_skills (core+soft+tools), certificates (required+preferred), innovation, learning, stress_resistance, communication, internship 各维度评分 1-5
+- [ ] **STU-07**: System calculates and returns completeness score — 已填充字段 / 总字段 百分比
+
+### Matching Engine (Phase 8)
+
+- [ ] **MATCH-01**: System performs 4-dimension quantitative matching — 基础要求/职业技能/职业素养/发展潜力 each dimension scored 0-100
+- [ ] **MATCH-02**: System generates gap analysis — LLM-generated natural language: "Missing: Python (required), SQL (preferred)"
+- [ ] **MATCH-03**: System returns top-5 job recommendations — ranked by aggregate score with per-dimension breakdown
+
+### Career Report (Phase 9)
+
+- [ ] **REPORT-01**: System generates career path plan — 从 Neo4j 图谱 retrieval: 晋升路径 + 换岗血缘
+- [ ] **REPORT-02**: System generates action plan with timelines — 短期(3个月)/中期(6个月)/长期(1年) 学习活动
+- [ ] **REPORT-03**: System generates evaluation metrics — 每个 milestone 的成功标准
+- [ ] **REPORT-04**: System returns gap remediation recommendations — 针对每个 gap 的具体学习资源和证书建议
+- [ ] **REPORT-05**: System exports report as PDF — WeasyPrint HTML-to-PDF or browser print
+
+### Frontend (Phase 10)
+
+- [ ] **UI-01**: User can upload resume via drag-and-drop interface — React + react-dropzone，PDF/DOCX 支持
+- [ ] **UI-02**: User can view 7-dimension profile as radar chart — recharts RadarChart，可视化 STU-06 输出
+- [ ] **UI-03**: User can view career path graph — react-force-graph，可视化 REPORT-01 路径
+- [ ] **UI-04**: User can view matching results with gap analysis — 匹配分数 + gap list + top-5 推荐
+- [ ] **UI-05**: User can view and download career report — PDF export of REPORT-01~04
+
+---
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Competitiveness Scoring
+
+- **STU-v2-01**: System calculates competitiveness score — 学生画像 vs 岗位市场平均值 比值
+
+### Advanced Matching
+
+- **MATCH-v2-01**: System supports multi-target matching — 同时匹配多个岗位类型
+- **MATCH-v2-02**: System supports career path simulation — "what if I choose X path vs Y"
+
+### Advanced Reporting
+
+- **REPORT-v2-01**: System generates AI-polished report — LLM reviews and improves own output
+- **REPORT-v2-02**: System tracks progress over time — 多次简历上传历史对比
+
+---
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| User login/registration | Competition project, focus on core matching |
+| Mobile native app | Web-first, mobile later |
+| Real-time resume scanning | Adds latency and external dependencies |
+| Salary prediction | No historical salary data for students |
+| Peer comparison/social | Privacy concerns, not core value |
+| Learning resource database | No external course/certificate data; LLM generates generic recommendations |
+| Manual profile editing | Breaks automated pipeline; use LLM-based suggestion refinement |
+
+---
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| STU-01 | Phase 6 | Pending |
+| STU-02 | Phase 6 | Pending |
+| STU-03 | Phase 6 | Pending |
+| STU-04 | Phase 6 | Pending |
+| STU-05 | Phase 6 | Pending |
+| STU-06 | Phase 7 | Pending |
+| STU-07 | Phase 7 | Pending |
+| MATCH-01 | Phase 8 | Pending |
+| MATCH-02 | Phase 8 | Pending |
+| MATCH-03 | Phase 8 | Pending |
+| REPORT-01 | Phase 9 | Pending |
+| REPORT-02 | Phase 9 | Pending |
+| REPORT-03 | Phase 9 | Pending |
+| REPORT-04 | Phase 9 | Pending |
+| REPORT-05 | Phase 9 | Pending |
+| UI-01 | Phase 10 | Pending |
+| UI-02 | Phase 10 | Pending |
+| UI-03 | Phase 10 | Pending |
+| UI-04 | Phase 10 | Pending |
+| UI-05 | Phase 10 | Pending |
+
+**Coverage:**
+- v1.1 requirements: 21 total
+- Mapped to phases: 0 (roadmap TBD)
+- Unmapped: 21 — awaiting roadmap creation
+
+---
+
+*Requirements defined: 2026-03-30*
+*Last updated: 2026-03-30 after v1.1 milestone started*
