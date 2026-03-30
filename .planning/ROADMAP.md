@@ -37,11 +37,12 @@
 4. User receives parsed skills organized by category: core skills / soft skills / tools
 5. User receives parsed experience data: internship, projects, extracurricular activities with dates and descriptions
 
-**Plans**: 2
+**Plans**: 3
 
 Plans:
-- [ ] 06-01-PLAN.md — Wave 1: Infrastructure + Models + Router skeleton + Test scaffold
-- [ ] 06-02-PLAN.md — Wave 2: Endpoint implementation + integration tests
+- [ ] 06-01-PLAN.md — Wave 1: Install pdfplumber, create Pydantic resume models, set up test fixtures
+- [ ] 06-02-PLAN.md — Wave 2: Create resume router skeleton and register in main.py (depends on 06-01)
+- [ ] 06-03-PLAN.md — Wave 3: Implement LLM endpoint logic with self-correction + integration tests (depends on 06-02)
 
 ### Phase 7: 学生能力画像
 
@@ -122,7 +123,7 @@ Plans:
 | 3 | v1.0 | 3/3 | Complete | 2026-03-30 |
 | 4 | v1.0 | 1/1 | Complete | 2026-03-30 |
 | 5 | v1.0 | 3/3 | Complete | 2026-03-30 |
-| 6 | v1.1 | 0/2 | In planning | - |
+| 6 | v1.1 | 0/3 | In planning | - |
 | 7 | v1.1 | 0/TBD | Not started | - |
 | 8 | v1.1 | 0/TBD | Not started | - |
 | 9 | v1.1 | 0/TBD | Not started | - |
