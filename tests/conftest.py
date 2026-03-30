@@ -1,8 +1,13 @@
+import os
 import pytest
 import json
 from pathlib import Path
 from unittest.mock import MagicMock, AsyncMock
 from openai import APITimeoutError, APIStatusError
+
+
+# Set fake API key before Settings is ever instantiated
+os.environ.setdefault("DEEPSEEK_API_KEY", "test-key-for-unit-tests")
 
 
 @pytest.fixture
