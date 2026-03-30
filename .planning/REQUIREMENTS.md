@@ -10,11 +10,11 @@
 
 ### Resume Parsing (Phase 6)
 
-- [ ] **STU-01**: User can upload PDF or DOCX resume file — 文件上传 endpoint，10MB限制，pdfplumber解析PDF，python-docx解析DOCX
-- [ ] **STU-02**: User receives parsed basic info — 姓名、学历、联系方式 from LLM extraction
-- [ ] **STU-03**: User receives parsed education history — 学校、专业、 GPA（如有）、入学毕业年份
-- [ ] **STU-04**: User receives parsed skills with categorization — core skills / soft skills / tools 三层分类
-- [ ] **STU-05**: User receives parsed experience data — 实习经历、项目经验、课外活动 with 时间 and 描述
+- [x] **STU-01**: User can upload PDF or DOCX resume file — 文件上传 endpoint，10MB限制，pdfplumber解析PDF，python-docx解析DOCX
+- [x] **STU-02**: User receives parsed basic info — 姓名、学历、联系方式 from LLM extraction
+- [x] **STU-03**: User receives parsed education history — 学校、专业、 GPA（如有）、入学毕业年份
+- [x] **STU-04**: User receives parsed skills with categorization — core skills / soft skills / tools 三层分类
+- [x] **STU-05**: User receives parsed experience data — 实习经历、项目经验、课外活动 with 时间 and 描述
 
 ### Student Ability Profiling (Phase 7)
 
@@ -87,11 +87,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STU-01 | Phase 6 | Pending |
-| STU-02 | Phase 6 | Pending |
-| STU-03 | Phase 6 | Pending |
-| STU-04 | Phase 6 | Pending |
-| STU-05 | Phase 6 | Pending |
+| STU-01 | Phase 6 | Complete |
+| STU-02 | Phase 6 | Complete |
+| STU-03 | Phase 6 | Complete |
+| STU-04 | Phase 6 | Complete |
+| STU-05 | Phase 6 | Complete |
 | STU-06 | Phase 7 | Pending |
 | STU-07 | Phase 7 | Pending |
 | MATCH-01 | Phase 8 | Pending |
