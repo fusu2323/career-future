@@ -34,9 +34,10 @@ class Certificates(BaseModel):
 class ExperienceEntry(BaseModel):
     """Single experience entry (internship, project, or extracurricular)."""
     company: Optional[str] = None  # for internship
-    name: Optional[str] = None     # for project/activity
-    position: Optional[str] = None  # for internship/activity
-    role: Optional[str] = None    # for project/activity
+    name: Optional[str] = None     # for project name
+    activity: Optional[str] = None  # for extracurricular activity name
+    position: Optional[str] = None  # for internship/activity position
+    role: Optional[str] = None    # for project/extracurricular role
     duration: Optional[str] = None  # e.g., "3个月", "2023.06-2023.09"
     description: Optional[str] = None
 

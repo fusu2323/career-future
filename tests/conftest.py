@@ -1,3 +1,4 @@
+import base64
 import os
 import pytest
 import json
@@ -43,10 +44,13 @@ def sample_job_record(jobs_cleaned_path):
 def mock_deepseek_client():
     """Return a MagicMock that simulates a successful DeepSeek API response."""
     client = MagicMock()
+    mock_message = MagicMock()
+    mock_message.content = '{"skill":"test","level":5}'
+    mock_message.role = "assistant"
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
     mock_completion = MagicMock()
-    mock_completion.choices = [MagicMock()]
-    mock_completion.choices[0].message.content = '{"skill":"test","level":5}'
-    mock_completion.choices[0].message.role = "assistant"
+    mock_completion.choices = [mock_choice]
     mock_completion.model = "deepseek-chat"
     client.chat.completions.create.return_value = mock_completion
     return client
@@ -56,16 +60,25 @@ def mock_deepseek_client():
 def mock_deepseek_client_json_fail():
     """Return a client that returns non-JSON on first call, valid JSON on second."""
     client = MagicMock()
+
+    # Fail response
+    fail_message = MagicMock()
+    fail_message.content = "not json"
+    fail_message.role = "assistant"
+    fail_choice = MagicMock()
+    fail_choice.message = fail_message
     mock_fail = MagicMock()
-    mock_fail.choices = [MagicMock()]
-    mock_fail.choices[0].message.content = "not json"
-    mock_fail.choices[0].message.role = "assistant"
+    mock_fail.choices = [fail_choice]
     mock_fail.model = "deepseek-chat"
 
+    # Success response
+    success_message = MagicMock()
+    success_message.content = '{"skill":"test","level":5}'
+    success_message.role = "assistant"
+    success_choice = MagicMock()
+    success_choice.message = success_message
     mock_success = MagicMock()
-    mock_success.choices = [MagicMock()]
-    mock_success.choices[0].message.content = '{"skill":"test","level":5}'
-    mock_success.choices[0].message.role = "assistant"
+    mock_success.choices = [success_choice]
     mock_success.model = "deepseek-chat"
 
     client.chat.completions.create.side_effect = [mock_fail, mock_success]
@@ -88,10 +101,13 @@ def mock_500_client():
     mock_response_500 = MagicMock()
     mock_response_500.status_code = 500
 
+    success_message = MagicMock()
+    success_message.content = '{"skill":"test","level":5}'
+    success_message.role = "assistant"
+    success_choice = MagicMock()
+    success_choice.message = success_message
     mock_success = MagicMock()
-    mock_success.choices = [MagicMock()]
-    mock_success.choices[0].message.content = '{"skill":"test","level":5}'
-    mock_success.choices[0].message.role = "assistant"
+    mock_success.choices = [success_choice]
     mock_success.model = "deepseek-chat"
 
     client.chat.completions.create.side_effect = [
@@ -118,11 +134,36 @@ def mock_400_client():
 # =============================================================================
 
 
+# Minimal valid PDF (ASCII content - LLM client is mocked so content doesn't matter)
+_PDF_ASCII = (
+    b"%PDF-1.4\n"
+    b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n"
+    b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n"
+    b"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+    b"/Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n"
+    b"4 0 obj\n<< /Length 44 >>\nstream\n"
+    b"BT\n/F1 12 Tf\n100 700 Td\n"
+    b"(Test Resume) Tj\n"
+    b"ET\nendstream\nendobj\n"
+    b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n"
+    b"xref\n0 6\n"
+    b"0000000000 65535 f\n"
+    b"0000000009 00000 n\n"
+    b"0000000058 00000 n\n"
+    b"0000000115 00000 n\n"
+    b"0000000266 00000 n\n"
+    b"0000000356 00000 n\n"
+    b"trailer\n<< /Size 6 /Root 1 0 R >>\n"
+    b"startxref\n"
+    b"430\n"
+    b"%%EOF"
+)
+
+
 @pytest.fixture
 def sample_pdf_bytes():
-    """Return minimal PDF bytes for testing (single page, Chinese text)."""
-    # Use a minimal valid PDF structure
-    return b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT\n/F1 12 Tf\n100 700 Td\n(张三 - 软件工程专业 - 应届毕业生) Tj\nET\nendstream\nendobj\n5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\nxref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000266 00000 n\n0000000356 00000 n\ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n430\n%%EOF"
+    """Return minimal PDF bytes for testing (single page)."""
+    return _PDF_ASCII
 
 
 @pytest.fixture
@@ -145,9 +186,8 @@ def sample_docx_bytes():
 def mock_resume_llm_client():
     """Return a MagicMock that simulates a successful DeepSeek resume parse response."""
     client = MagicMock()
-    mock_completion = MagicMock()
-    mock_completion.choices = [MagicMock()]
-    mock_completion.choices[0].message.content = json.dumps({
+    mock_message = MagicMock()
+    mock_message.content = json.dumps({
         "name": "张三",
         "education_level": "本科",
         "contact": {"phone": "13800138000", "email": "zhangsan@example.com"},
@@ -166,7 +206,11 @@ def mock_resume_llm_client():
         "missing_fields": [],
         "parse_attempts": 1
     })
-    mock_completion.choices[0].message.role = "assistant"
+    mock_message.role = "assistant"
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+    mock_completion = MagicMock()
+    mock_completion.choices = [mock_choice]
     mock_completion.model = "deepseek-chat"
     client.chat.completions.create.return_value = mock_completion
     return client
@@ -182,3 +226,17 @@ def client(mock_deepseek_client):
         from fastapi.testclient import TestClient
         with TestClient(app) as c:
             yield c
+
+
+@pytest.fixture
+def resume_client(mock_resume_llm_client):
+    """Return a TestClient with mock_resume_llm_client injected for /resume tests."""
+    from app.main import app
+    from app.clients.deepseek import get_deepseek_client
+    from fastapi.testclient import TestClient
+    app.dependency_overrides[get_deepseek_client] = lambda: mock_resume_llm_client
+    try:
+        with TestClient(app) as c:
+            yield c
+    finally:
+        app.dependency_overrides.clear()
