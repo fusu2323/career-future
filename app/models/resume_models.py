@@ -1,5 +1,5 @@
-"""Pydantic models for resume parsing — STU-01 through STU-05."""
-from typing import Optional
+"""Pydantic models for resume parsing — aligned with Phase 7's 7-dimension profile."""
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
@@ -10,64 +10,77 @@ class ContactInfo(BaseModel):
 
 
 class EducationEntry(BaseModel):
-    """Education history entry."""
+    """Single education history entry."""
     school: Optional[str] = None
     major: Optional[str] = None
-    gpa: Optional[str] = None
-    start_year: Optional[str] = None
-    end_year: Optional[str] = None
+    gpa: Optional[str] = None  # e.g., "3.8" or null if not available
+    start_year: Optional[str] = None  # e.g., "2020"
+    end_year: Optional[str] = None  # e.g., "2024"
+
+
+class ProfessionalSkills(BaseModel):
+    """Categorized professional skills (STU-04)."""
+    core: List[str] = Field(default_factory=list)      # 核心技能
+    soft: List[str] = Field(default_factory=list)       # 软技能
+    tools: List[str] = Field(default_factory=list)     # 工具软件
+
+
+class Certificates(BaseModel):
+    """Professional certificates (STU-04)."""
+    required: List[str] = Field(default_factory=list)   # 必要证书
+    preferred: List[str] = Field(default_factory=list)  # 优先证书
 
 
 class ExperienceEntry(BaseModel):
-    """Experience entry (internship, project, or extracurricular)."""
-    company: Optional[str] = None
-    position: Optional[str] = None
-    name: Optional[str] = None
-    activity: Optional[str] = None
-    role: Optional[str] = None
-    duration: Optional[str] = None
+    """Single experience entry (internship, project, or extracurricular)."""
+    company: Optional[str] = None  # for internship
+    name: Optional[str] = None     # for project/activity
+    position: Optional[str] = None  # for internship/activity
+    role: Optional[str] = None    # for project/activity
+    duration: Optional[str] = None  # e.g., "3个月", "2023.06-2023.09"
     description: Optional[str] = None
 
 
 class ExperienceData(BaseModel):
-    """All experience categories."""
-    internship: list[ExperienceEntry] = Field(default_factory=list)
-    projects: list[ExperienceEntry] = Field(default_factory=list)
-    extracurriculars: list[ExperienceEntry] = Field(default_factory=list)
-
-
-class ProfessionalSkills(BaseModel):
-    """Categorized professional skills."""
-    core: list[str] = Field(default_factory=list)
-    soft: list[str] = Field(default_factory=list)
-    tools: list[str] = Field(default_factory=list)
-
-
-class Certificates(BaseModel):
-    """Certificate categories."""
-    required: list[str] = Field(default_factory=list)
-    preferred: list[str] = Field(default_factory=list)
+    """All experience data (STU-05)."""
+    internship: List[ExperienceEntry] = Field(default_factory=list)
+    projects: List[ExperienceEntry] = Field(default_factory=list)
+    extracurriculars: List[ExperienceEntry] = Field(default_factory=list)
 
 
 class ResumeData(BaseModel):
     """
-    Structured resume data extracted by LLM — covers STU-02 through STU-05.
+    Complete parsed resume data aligned with Phase 7's 7-dimension profile.
 
-    STU-02: name, education_level, contact
-    STU-03: education (school, major, gpa)
-    STU-04: professional_skills (core, soft, tools), certificates
-    STU-05: experience (internship, projects, extracurriculars)
+    Fields:
+    - Basic info (STU-02): name, education_level, contact
+    - Education (STU-03): education
+    - Skills (STU-04): professional_skills, certificates
+    - Experience (STU-05): experience
+    - Phase 7 helpers: innovation, learning, stress_resistance, communication (1-5 scale)
+    - Metadata: missing_fields, parse_attempts
     """
+    # Basic info (STU-02)
     name: Optional[str] = None
     education_level: Optional[str] = None  # 高中/大专/本科/硕士/博士
     contact: Optional[ContactInfo] = None
-    education: list[EducationEntry] = Field(default_factory=list)
+
+    # Education history (STU-03)
+    education: List[EducationEntry] = Field(default_factory=list)
+
+    # Skills categorized (STU-04)
     professional_skills: ProfessionalSkills = Field(default_factory=ProfessionalSkills)
     certificates: Certificates = Field(default_factory=Certificates)
+
+    # Experience (STU-05)
     experience: ExperienceData = Field(default_factory=ExperienceData)
-    innovation: Optional[int] = None  # 1-5
-    learning: Optional[int] = None  # 1-5
-    stress_resistance: Optional[int] = None  # 1-5
-    communication: Optional[int] = None  # 1-5
-    missing_fields: list[str] = Field(default_factory=list)
+
+    # Phase 7 mapping helpers (1-5 scale)
+    innovation: Optional[float] = None
+    learning: Optional[float] = None
+    stress_resistance: Optional[float] = None
+    communication: Optional[float] = None
+
+    # Metadata
+    missing_fields: List[str] = Field(default_factory=list)
     parse_attempts: int = 1
