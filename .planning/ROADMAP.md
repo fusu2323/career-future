@@ -37,7 +37,11 @@
 4. User receives parsed skills organized by category: core skills / soft skills / tools
 5. User receives parsed experience data: internship, projects, extracurricular activities with dates and descriptions
 
-**Plans**: TBD
+**Plans**: 2
+
+Plans:
+- [ ] 06-01-PLAN.md — Wave 1: Infrastructure + Models + Router skeleton + Test scaffold
+- [ ] 06-02-PLAN.md — Wave 2: Endpoint implementation + integration tests
 
 ### Phase 7: 学生能力画像
 
@@ -118,7 +122,7 @@
 | 3 | v1.0 | 3/3 | Complete | 2026-03-30 |
 | 4 | v1.0 | 1/1 | Complete | 2026-03-30 |
 | 5 | v1.0 | 3/3 | Complete | 2026-03-30 |
-| 6 | v1.1 | 0/TBD | Not started | - |
+| 6 | v1.1 | 0/2 | In planning | - |
 | 7 | v1.1 | 0/TBD | Not started | - |
 | 8 | v1.1 | 0/TBD | Not started | - |
 | 9 | v1.1 | 0/TBD | Not started | - |
@@ -171,4 +175,4 @@ Phase4(图谱) ───────────────┘（图谱可与Ph
 
 ---
 
-_路线图制定：2026-03-30 | 更新：2026-03-30 v1.1 milestone started_
+_路线图制定：2026-03-30 | 更新：2026-03-31 Phase 6 planning_
