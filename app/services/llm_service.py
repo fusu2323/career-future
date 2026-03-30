@@ -8,7 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 from app.exceptions.llm_exceptions import LLMTimeoutError, LLMJSONParseError, LLMRetryExhaustedError
 
 
-TIMEOUTS = {"profile": 15.0, "match": 20.0, "report": 45.0}
+TIMEOUTS = {"profile": 15.0, "match": 20.0, "report": 45.0, "resume": 20.0}
 
 
 def is_retryable_http_error(exc: Exception) -> bool:
@@ -48,12 +48,13 @@ async def generate_structured(
     prompt: str,
     temperature: float = 0.1,
     max_tokens: int | None = None,
+    timeout_override: float | None = None,
 ) -> dict:
     """
     Generate structured JSON from LLM with retry, timeout, and JSON parse retry.
 
     - HTTP retry: 3x with exponential backoff (1s/2s/4s)
-    - Timeout: per task type (profile=15s, match=20s, report=45s)
+    - Timeout: per task type (profile=15s, match=20s, report=45s, resume=20s)
     - JSON parse retry: up to 2 additional calls on parse failure
     """
     messages = [{"role": "user", "content": prompt}]
@@ -61,7 +62,7 @@ async def generate_structured(
     if max_tokens is not None:
         kwargs["max_tokens"] = max_tokens
 
-    timeout_seconds = TIMEOUTS[task_type]
+    timeout_seconds = timeout_override if timeout_override is not None else TIMEOUTS[task_type]
 
     for attempt in range(3):
         try:
