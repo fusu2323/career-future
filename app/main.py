@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
-from app.routers import llm_router, health_router
+from app.routers import llm_router, health_router, resume_router
 from app.config import Settings
 
 
@@ -52,3 +52,4 @@ async def root():
 
 app.include_router(llm_router)
 app.include_router(health_router)
+app.include_router(resume_router)
