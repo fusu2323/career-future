@@ -6,6 +6,19 @@
 
 ---
 
+## 当前里程碑：v1.1 核心功能交付
+
+**目标：** 完成简历解析→学生画像→人岗匹配→职业报告的完整链路
+
+**目标功能：**
+- **Phase 6**: 简历解析服务 — PDF/DOCX上传 + LLM解析 → 结构化能力数据
+- **Phase 7**: 学生能力画像生成 — 7维画像 + 完整度评分 + 竞争力评分
+- **Phase 8**: 人岗匹配引擎 — 4维度量化匹配 + 差距分析
+- **Phase 9**: 职业报告生成 — 路径规划 + 行动计划 + 评估指标 + 导出
+- **Phase 10**: 前端界面 — 简历上传 / 画像展示 / 图谱可视化 / 匹配结果 / 报告编辑导出
+
+---
+
 ## 当前状态
 
 **技术栈：** Python 3.11+ / FastAPI / ChromaDB / Neo4j / DeepSeek (LLM)
@@ -27,11 +40,11 @@
 
 ### 进行中 (v1.1)
 
-- [ ] **STU-01/STU-02**: 简历解析服务——PDF/DOCX上传→LLM解析→结构化能力数据
-- [ ] **STU-03/STU-04**: 学生能力画像生成——7维画像+完整度评分+竞争力评分
-- [ ] **MATCH-01/02/03**: 人岗匹配引擎——4维度量化匹配+差距分析
-- [ ] **REPORT-01~05**: 职业报告生成——路径规划+行动计划+评估指标+导出
-- [ ] **UI-01~06**: 前端界面——简历上传/画像展示/图谱可视化/匹配结果/报告编辑导出
+- [ ] **STU-01**: 简历解析服务——PDF/DOCX上传→LLM解析→结构化能力数据
+- [ ] **STU-02**: 学生能力画像生成——7维画像+完整度评分+竞争力评分
+- [ ] **MATCH-01**: 人岗匹配引擎——4维度量化匹配+差距分析
+- [ ] **REPORT-01**: 职业报告生成——路径规划+行动计划+评估指标+导出
+- [ ] **UI-01**: 前端界面——简历上传/画像展示/图谱可视化/匹配结果/报告编辑导出
 
 ### 范围之外
 
@@ -87,4 +100,23 @@
 - DeepSeek deepseek-chat/base_url https://api.deepseek.com/HTTP retry 3x/retry on 5xx/503/429/timeout NOT on 400/401/per-task timeout/profile=15s match=20s report=45s/JSON parse retry 1-2x
 
 ---
-*最后更新：2026-03-30 after v1.0 milestone*
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
+---
+*最后更新：2026-03-30 after v1.1 milestone started*
