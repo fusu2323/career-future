@@ -29,6 +29,10 @@
 
 ## 需求
 
+### 已验证 (v1.1)
+
+- ✅ **STU-01**: 简历解析服务——PDF/DOCX上传→LLM解析→结构化能力数据 (Phase 6)
+
 ### 已验证 (v1.0)
 
 - ✅ **TECH-04**: 数据清洗——9178条清洗后记录，780条重复记录，薪资标准化覆盖率97.43% (v1.0)
@@ -40,7 +44,7 @@
 
 ### 进行中 (v1.1)
 
-- [ ] **STU-01**: 简历解析服务——PDF/DOCX上传→LLM解析→结构化能力数据
+- [ ] **STU-02**: 学生能力画像生成——7维画像+完整度评分+竞争力评分
 - [ ] **STU-02**: 学生能力画像生成——7维画像+完整度评分+竞争力评分
 - [ ] **MATCH-01**: 人岗匹配引擎——4维度量化匹配+差距分析
 - [ ] **REPORT-01**: 职业报告生成——路径规划+行动计划+评估指标+导出
@@ -96,6 +100,9 @@
 ### Phase 4 图谱
 - Neo4j库planer(neo4j/fusu2023yzcm)/单图双关系PROMOTES_TO+TRANSITIONS_TO/职级节点初级-中级-高级拆分
 
+### Phase 6 简历解析
+- pdfplumber+python-docx文件提取/DeepSeek generate_structured调用/resume timeout=20s/自修正prompt+部分降级/resume_models对齐Phase7七维画像
+
 ### Phase 5 LLM服务
 - DeepSeek deepseek-chat/base_url https://api.deepseek.com/HTTP retry 3x/retry on 5xx/503/429/timeout NOT on 400/401/per-task timeout/profile=15s match=20s report=45s/JSON parse retry 1-2x
 
@@ -119,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*最后更新：2026-03-30 after v1.1 milestone started*
+*最后更新：2026-03-31 after Phase 6 complete*
