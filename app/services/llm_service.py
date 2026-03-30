@@ -20,26 +20,26 @@ def is_retryable_http_error(exc: Exception) -> bool:
     return False
 
 
+def _retry_if_retryable_http_error(exc: Exception) -> bool:
+    """Tenacity retry predicate: only retry if is_retryable_http_error returns True."""
+    return isinstance(exc, (APITimeoutError, APIStatusError)) and is_retryable_http_error(exc)
+
+
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=1, max=4),
-    retry=retry_if_exception_type((APITimeoutError, APIStatusError)),
+    retry=_retry_if_retryable_http_error,
     reraise=True,
 )
 def _call_with_retry_sync(client, messages: list, timeout: float, **kwargs):
     """Synchronous LLM call with tenacity retry (3x, 1s/2s/4s backoff)."""
-    try:
-        return client.chat.completions.create(
-            model="deepseek-chat",
-            messages=messages,
-            response_format={"type": "json_object"},
-            timeout=timeout,
-            **kwargs,
-        )
-    except APIStatusError as e:
-        if not is_retryable_http_error(e):
-            raise
-        raise
+    return client.chat.completions.create(
+        model="deepseek-chat",
+        messages=messages,
+        response_format={"type": "json_object"},
+        timeout=timeout,
+        **kwargs,
+    )
 
 
 async def generate_structured(
