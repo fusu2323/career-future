@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 核心功能交付
 status: executing
-stopped_at: Completed 06-01 plan
-last_updated: "2026-03-30T16:46:10.115Z"
+stopped_at: Completed 06-02 plan
+last_updated: "2026-03-30T16:47:52.630Z"
 last_activity: 2026-03-30
 progress:
   total_phases: 5
@@ -79,6 +79,7 @@ Recent decisions affecting current work:
 - Phase 6: PDF via pdfplumber, DOCX via python-docx, 10MB file limit
 - Phase 8: Two-stage matching (ChromaDB召回 Top-50 + LLM精排)
 - Phase 9: RAG mandatory — career paths must be retrieved from Neo4j
+- [Phase 06]: Resume parsing: pdfplumber for PDF, python-docx for DOCX, self-correction with retry prompt, partial result on ultimate failure
 
 ### Pending Todos
 
@@ -93,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T16:46:10.111Z
-Stopped at: Completed 06-01 plan
+Last session: 2026-03-30T16:47:46.234Z
+Stopped at: Completed 06-02 plan
 Resume file: None
