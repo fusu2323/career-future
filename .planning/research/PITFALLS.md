@@ -1,353 +1,566 @@
-# Domain Pitfalls: AI职业规划智能体
+# 领域陷阱：AI职业规划智能体 v1.1 新功能集成
 
-**Domain:** AI Career Planning / Human-Resource Matching
-**Researched:** 2026-03-29
-**Confidence:** LOW (WebSearch unavailable; based on training knowledge)
-
----
-
-## Critical Pitfalls
-
-Mistakes that cause rewrites, failed accuracy metrics, or harmful career advice.
+**领域：** AI职业规划/人力资源匹配
+**上下文：** v1.0已交付（ChromaDB向量库、Neo4j图谱、DeepSeek LLM服务、FastAPI后端）
+**研究日期：** 2026-03-30
+**置信度：** 低（网络搜索不可用；基于训练知识 + 项目上下文）
+**重点：** 向现有系统添加简历解析、学生画像、匹配引擎、报告生成、前端界面时的常见错误
 
 ---
 
-### Pitfall 1: LLM Hallucination in Professional Career Advice
+## 关键陷阱
 
-**What goes wrong:** The LLM generates confident but factually incorrect career advice, such as claiming a skill is in demand when it is not, inventing non-existent job titles, or suggesting obsolete certification paths.
-
-**Why it happens:**
-- LLMs generate plausible-sounding text without grounding in current labor market data
-- Career advice requires real-time labor market information that static LLM training cannot provide
-- System prompt instructions are insufficient to prevent hallucination on specific Chinese job markets
-
-**Consequences:**
-- Students make poor career decisions based on false information
-- 80% matching accuracy requirement may be missed if hallucinations propagate to match results
-- Trust erosion if users discover factual errors
-
-**Prevention:**
-1. **Ground all career advice in the 10,000-job dataset** - Never let LLM invent information outside the dataset
-2. **Use retrieval-augmented generation (RAG)** - Always retrieve relevant job/career data before generating advice
-3. **Add factual assertions to prompts** - "Based on the available job data showing X, recommend Y"
-4. **Implement confidence scoring** - Flag advice that cannot be grounded in retrieved data
-5. **Add disclaimer layer** - Distinguish between data-grounded recommendations vs. LLM-generated suggestions
-
-**Detection (Warning Signs):**
-- LLM outputs job titles not in the database
-- Recommendations reference skills/certifications not present in job requirements
-- Career paths suggest promotions that do not exist in the knowledge graph
-
-**Phase to Address:** Phase 2 (Matching System) - The RAG pipeline must be built before any LLM advice generation.
+导致重写、准确率失败或有害职业建议的错误，按功能领域组织。
 
 ---
 
-### Pitfall 2: Resume Parsing Failure on Varied Chinese Resume Formats
+## 一、简历解析（Phase 6）
 
-**What goes wrong:** The resume parser fails to correctly extract information from resumes with non-standard layouts, unusual formatting, or domain-specific abbreviations common in Chinese resumes.
+### 陷阱R1：PDF/DOCX上传后文件内容提取失败
 
-**Why it happens:**
-- Chinese resumes vary widely in structure (timeline format, table format, free-form)
-- Academic/skill sections use inconsistent terminology
-- Scanned PDFs introduce OCR errors
-- The parser was likely trained on limited resume templates
+**问题：** 上传简历后，文本提取失败或返回乱码，导致后续LLM解析无数据可用。
 
-**Consequences:**
-- Student profile accuracy below 90% threshold
-- Downstream matching uses incomplete/wrong data
-- User trust issues when they see incorrect parsed data
+**原因：**
+- PDF扫描件（图像）无嵌入式文本，依赖OCR质量
+- DOCX内部XML结构解析错误，特别是中文排版
+- 大文件上传超时未处理
+- 文件扩展名与实际格式不符
 
-**Prevention:**
-1. **Implement multiple parsing strategies** - Table extraction, section header detection, line-item recognition
-2. **Validate parsed data against expected schemas** - Reject profiles with >30% missing required fields
-3. **Use LLM for structure inference** - Prompt GLM-4 to identify sections and normalize unstructured text
-4. **Build a "low confidence" flag system** - If parsing confidence < threshold, prompt user to verify/correct
-5. **Test with diverse resume formats** - Create test set of at least 20 different Chinese resume templates
+**后果：**
+- 简历解析API返回空数据或错误
+- 用户体验：上传成功但显示"解析失败"
+- 后续所有阶段（画像、匹配、报告）都无法进行
 
-**Detection (Warning Signs):**
-- Parser outputs empty fields for clearly-present information
-- Skills extracted do not match resume text
-- Timeline gaps or ordering errors in education/experience
+**预防：**
+1. **先验证文件类型** — 检查magic bytes而非仅依赖扩展名
+2. **实现文件大小限制** — 最大5MB，超出返回明确错误
+3. **区分数字PDF和扫描件** — 扫描件标记为需要OCR，提示用户
+4. **超时处理** — 文件提取设置10秒超时，超时则返回部分结果+警告
+5. **测试多种格式** — 准备10+种不同中文简历格式测试集
 
-**Phase to Address:** Phase 1 (Profile Generation) - Resume parsing must be robust before matching.
+**检测（警告信号）：**
+- 提取文本长度 < 100字符
+- 提取文本包含大量 `\x00` 或非中文Unicode块
+- 文件上传后立即返回500错误
 
----
-
-### Pitfall 3: Matching Algorithm Produces Biased or Unfair Results
-
-**What goes wrong:** The matching algorithm systematically disadvantages certain student profiles due to training data bias or algorithmic design flaws.
-
-**Why it happens:**
-- Job data reflects existing hiring biases (e.g., over-weighting prestigious companies, specific学历 requirements)
-- Four-dimension matching weights may inadvertently penalize non-traditional backgrounds
-- Cold-start students with sparse resumes get worse matches due to data gaps
-
-**Consequences:**
-- Underserved students receive poor recommendations
-- Violates fairness expectations for a career guidance product
-- May miss 80% accuracy target on edge cases
-
-**Prevention:**
-1. **Audit matching results for demographic parity** - Test whether similar-profile students get similar results
-2. **Use explainable matching** - Each match dimension should be traceable to specific resume/job data
-3. **Weight fairness adjustment** - Add re-ranking step that boosts under-represented dimensions
-4. **Handle sparse data explicitly** - Use collaborative filtering or content-similarity for cold-start students
-5. **Document bias limitations** - Be transparent that recommendations reflect job data biases
-
-**Detection (Warning Signs):**
-- Students with strong practical experience but low学历 get poor matches
-- Students with non-standard resumes consistently get low match scores
-- Same resume gets different results on re-run (non-deterministic matching)
-
-**Phase to Address:** Phase 2 (Matching System) - Algorithm audit and fairness testing should be part of matching development.
+**解决阶段：** Phase 6（简历解析）— 文件提取必须在LLM解析之前可靠
 
 ---
 
-### Pitfall 4: Cold Start Problem - New Users with No Resume Data
+### 陷阱R2：LLM解析结构化字段时遗漏或幻觉
 
-**What goes wrong:** New students with incomplete or missing resume data receive poor/vague recommendations, making the system useless for its primary use case.
+**问题：** LLM从简历文本提取字段时产生错误——虚构技能、错误的教育年份、遗漏工作经历。
 
-**Why it happens:**
-- Matching algorithm requires rich student profile data
-- Students early in their career have limited experiences to input
-- System treats "no data" the same as "low ability"
+**原因：**
+- 简历文本格式混乱，LLM难以定位边界
+- 提示词未明确要求JSON schema约束
+- 未使用JSON schema validation验证输出
+- LLM倾向于"补全"看似合理但不准确的信息
 
-**Consequences:**
-- Poor user experience for the target audience (college students early in career)
-- Low engagement rates
-- Cannot validate 80% accuracy on cold-start cases
+**后果：**
+- 学生画像数据不准确，90%准确率目标无法达成
+- 错误的技能被记录，影响匹配质量
+- 画像完整性评分虚高（系统以为解析成功但数据错误）
 
-**Prevention:**
-1. **Implement progressive profiling** - Start with basic questions, refine over time
-2. **Use job data to bootstrap profiles** - Suggest typical skills/attributes for students at each year level
-3. **Build a "capability gap" mode** - Instead of matching, suggest what skills to develop
-4. **Set minimum profile completeness threshold** - Do not run matching until profile is >50% complete
-5. **Design "exploration mode"** - Allow students to browse job categories without full profile
+**预防：**
+1. **强制JSON schema输出** — 在提示中要求`{"skills": [], "education": []}`格式
+2. **Pydantic验证解析结果** — 字段类型校验、必填字段检查
+3. **置信度字段** — LLM输出每个字段的置信度，过低则标记待用户确认
+4. **结构化提取示例** — 在提示中提供3-5个不同格式简历的解析示例
+5. **双重验证** — 关键字段（技能列表、证书）需明确出现在原文中
 
-**Detection (Warning Signs):**
-- New users immediately get "no matching jobs" or generic results
-- Profile completeness scores remain at 0% after resume upload
-- System cannot generate reports for incomplete profiles
+**检测（警告信号）：**
+- 解析结果JSON schema验证失败
+- 技能数量异常多（>50）或异常少（<3）
+- 教育/工作经历时间线重叠或不合逻辑
 
-**Phase to Address:** Phase 1 (Profile Generation) - Must design cold-start handling alongside profile generation.
-
----
-
-### Pitfall 5: Generated Reports Are Vague and Non-Actionable
-
-**What goes wrong:** Career reports contain generic advice like "improve your communication skills" without specific, measurable actions.
-
-**Why it happens:**
-- LLM defaults to high-level career platitudes when not given specific grounding data
-- Reports are not tied to the specific gap analysis from matching results
-- No mechanism to verify actionability before report delivery
-
-**Consequences:**
-- Students cannot use reports to make decisions
-- Fails the "可操作的行动计划" (actionable action plan) requirement
-- No way to measure report quality or improvement over time
-
-**Prevention:**
-1. **Ground every recommendation in matching gaps** - Each section must reference specific missing skills from gap analysis
-2. **Use structured report templates** - Define sections that MUST contain: current state, target state, specific actions, success metrics
-3. **Implement actionability scoring** - Rate recommendations on specificity (1-5) before finalizing
-4. **Include timeline and resources** - Every action should have estimated time and learning resources
-5. **Add verification prompt** - Ask LLM "Could a student act on this recommendation without additional research?"
-
-**Detection (Warning Signs):**
-- Report contains only generic advice without specific details
-- Recommendations could apply to any student in any field
-- No specific courses, certifications, or actions listed
-
-**Phase to Address:** Phase 3 (Report Generation) - Report structure and grounding must be architected, not left to LLM default behavior.
+**解决阶段：** Phase 6 — 解析质量决定画像和匹配质量
 
 ---
 
-### Pitfall 6: Targeting 80%/90% Accuracy Without Defining It Precisely
+### 陷阱R3：文件上传API与现有路由冲突
 
-**What goes wrong:** The project aims for "80% matching accuracy" and "90% profile accuracy" without specifying what these metrics actually measure, leading to validation disputes.
+**问题：** 新增简历上传路由与现有 `/llm` 或 `/health` 路由冲突，或者CORS配置错误导致前端无法调用。
 
-**Why it happens:**
-- Accuracy definitions are ambiguous (precision? recall? F1? hit rate?)
-- No ground truth dataset to validate against
-- Different stakeholders interpret "accurate" differently
+**原因：**
+- FastAPI路由按注册顺序匹配，前缀冲突未检测
+- CORS默认只允许 localhost，部署后前端域名未配置
+- 文件上传未设置正确的 `multipart/form-data` content-type
+- 大文件上传（>1MB）未配置FastAPI body limit
 
-**Consequences:**
-- Cannot objectively measure if requirements are met
-- Potential for false confidence (system seems accurate on happy-path tests)
-- Competition judging may use different accuracy definitions
+**后果：**
+- 前端上传简历返回403 Forbidden
+- 上传大文件时Nginx返回413 Request Entity Too Large
+- API文档中看不到上传接口
 
-**Prevention:**
-1. **Define precision metrics explicitly** - e.g., "80% of top-5 recommended jobs are genuinely suitable for the student"
-2. **Create validation dataset** - Manually label 100 student-job pairs as correctly/incorrectly matched
-3. **Define profile accuracy as field-level match** - e.g., 90% of extracted skills must match manually-annotated skills
-4. **Separate evaluation from generation** - Build evaluation module that scores existing outputs
-5. **Report confidence intervals** - Don't claim a single accuracy number without variance
+**预防：**
+1. **路由前缀规范** — `/api/v1/resume/upload` 而非 `/resume`，便于版本管理和CORS配置
+2. **CORS白名单** — 在 `main.py` 的app初始化时配置允许的前端域名
+3. **文件上传依赖** — 使用 `python-multipart`，在router参数中正确声明 `UploadFile`
+4. **Nginx代理配置** — 设置 `client_max_body_size 10M;`
 
-**Detection (Warning Signs):**
-- No measurable way to distinguish a 79% vs 81% accurate system
-- Validation results vary significantly across different student profiles
-- "Accuracy" only measured on easy cases (students with clear matches)
+**检测（警告信号）：**
+- 前端控制台 CORS 错误
+- 413 Request Entity Too Large
+- Swagger UI中看不到上传接口
 
-**Phase to Address:** Phase 0 (Planning) - Metric definitions must be locked before development begins.
-
----
-
-### Pitfall 7: Chinese Language Nuances Breaking LLM Understanding
-
-**What goes wrong:** The LLM misinterprets Chinese professional terminology, fails to understand Chinese resume conventions, or produces unnatural Chinese output.
-
-**Why it happens:**
-- Chinese career terminology has specific meanings that vary by region/industry
-- Abbreviations in Chinese resumes (e.g., "985", "211" for university tiers) may confuse the model
-- Professional terms like "抗压能力" (pressure resistance) need careful prompt framing
-- GLM-4 may default to simplified Chinese conventions inappropriate for traditional career contexts
-
-**Consequences:**
-- Incorrect extraction of 能力维度 (capability dimensions)
-- Career advice sounds robotic or inappropriate
-- Confusion around certifications and credentials specific to Chinese market
-
-**Prevention:**
-1. **Create Chinese domain glossary** - Define key terms with explicit examples in prompts
-2. **Use Chinese-optimized prompts** - Include few-shot examples of expected Chinese resume structures
-3. **Handle tier abbreviations** - Explicitly expand "985", "211", "C9" in parsing prompts
-4. **Include regional labor market context** - Chinese job markets vary by city tier
-5. **Test with authentic Chinese resumes** - Ensure training/test data reflects actual Chinese resume styles
-
-**Detection (Warning Signs):**
-- LLM produces English explanations when asked about Chinese career concepts
-- Parsed skills do not match Chinese terminology in source resume
-- Report output uses mainland simplified but target audience expects traditional
-
-**Phase to Address:** Phase 1 (Profile Generation) - Chinese language handling must be built into parsing prompts.
+**解决阶段：** Phase 6 集成测试 — 上传功能必须在连接前端之前验证
 
 ---
 
-### Pitfall 8: Over-Engineering the Knowledge Graph When Simple Matching Suffices
+## 二、学生画像生成（Phase 7）
 
-**What goes wrong:** The team spends excessive time building complex岗位晋升图谱 and 换岗路径图谱 instead of delivering working matching and reporting.
+### 陷阱P1：7维度画像与简历原始数据不对齐
 
-**Why it happens:**
-- The 5 job profile and graph requirements (JOB-PROFILE-01, -02, -03) are ambitious
-- Building Neo4j knowledge graphs is technically interesting but time-consuming
-- Competition judged on matching accuracy first, graph complexity second
+**问题：** 生成的7维度画像与简历实际内容不符——维度评分无依据，或维度定义模糊导致重复评分。
 
-**Consequences:**
-- Matching core (which determines the 80% accuracy) is under-developed
-- Report generation (scored explicitly in REPORT-*) is rushed
-- Graph features work but matching does not
+**原因：**
+- 维度定义不精确（"职业素养" vs "职业技能"边界不清）
+- LLM自行推断维度分数而不引用具体简历证据
+- 画像生成未基于Phase 6解析的结构化数据，而是重新解析原始简历
 
-**Prevention:**
-1. **Prioritize matching accuracy over graph depth** - If matching fails, the graph is irrelevant
-2. **Build minimum viable graph first** - Simple job-to-skill mappings before complex pathfinding
-3. **Define graph scope explicitly** - Limit to the "5 job transitions with 2 paths each" minimum
-4. **Use graph only for recommendation explanation** - Graph complexity should serve matching, not be an end itself
-5. **Time-box graph development** - Set hard deadlines for graph features separate from matching features
+**后果：**
+- 画像无法向用户解释（"为什么我的沟通能力是7分？"）
+- 画像完整性评分与实际数据质量不符
+- 竞争力评分无意义
 
-**Detection (Warning Signs):**
-- Graph construction takes more than 30% of total development time
-- Matching accuracy still below 80% while graph features are complete
-- Team excitement about graph visibility exceeds matching performance
+**预防：**
+1. **维度定义明确化** — 每个维度提供2-3句精确定义，包含该维度评估的简历证据类型
+2. **基于解析数据生成** — 画像LLM调用必须输入Phase 6的结构化解析结果
+3. **证据追踪** — 每个维度评分附带引用的简历原文片段
+4. **自洽性验证** — 相邻维度评分差异 >3分时要求解释
 
-**Phase to Address:** Phase 2 (Matching System) - Graph features should not delay matching development.
+**检测（警告信号）：**
+- 画像评分无法追溯到简历原文
+- 相近维度评分完全相同（无区分度）
+- 画像生成时间异常短（<3秒）— 可能是跳过解析直接默认
 
----
-
-## Moderate Pitfalls
-
-Issues that cause delays or degraded quality but do not require full rewrites.
+**解决阶段：** Phase 7 — 画像必须有可解释的依据
 
 ---
 
-### Pitfall 9: Report Exports Fail or Produce Inconsistent Formatting
+### 陷阱P2：画像完整性评分误导用户
 
-**What goes wrong:** The "一键导出" (one-click export) feature produces broken PDFs or inconsistent formatting across different browsers/devices.
+**问题：** 画像完整性评分显示80%，但实际关键字段（核心技能、工作经历）为空或错误。
 
-**Prevention:** Use established PDF generation libraries (weasyprint, pdfkit) with templates; test exports on multiple browsers.
+**原因：**
+- 完整性评分基于字段填充率而非字段正确性
+- 可选字段（如项目经历）权重过高
+- 未区分"未填写"和"填写但错误"
 
-**Phase to Address:** Phase 3 (Report Generation) - Late phase feature, but needs early library selection.
+**后果：**
+- 用户以为画像完整，但匹配结果不准确
+- 用户信任度下降（"系统说我完整但匹配结果很差"）
 
----
+**预防：**
+1. **分离完整性 vs 准确性** — 两个独立评分，避免混淆
+2. **关键字段权重** — 教育背景、核心技能、工作经历权重 > 60%
+3. **低置信度标记** — 解析置信度 < 0.7的字段不计入完整性
+4. **用户修正反馈** — 用户修正字段后重新计算完整性
 
-### Pitfall 10: Matching Weights Are Tuned to Test Data, Not General Students
+**检测（警告信号）：**
+- 完整性80%但匹配分数异常低
+- 用户抱怨"我的简历信息很完整为什么匹配不准"
 
-**What goes wrong:** The 四维匹配 algorithm weights (基础要求, 职业技能, 职业素养, 发展潜力) are optimized for a small test set and perform poorly on diverse students.
-
-**Prevention:** Use cross-validation; hold out 20% of student profiles for final testing only.
-
-**Phase to Address:** Phase 2 (Matching System) - Weight tuning should use separate validation set.
-
----
-
-### Pitfall 11: Student Profile Completeness Scoring Is Gamed
-
-**What goes wrong:** Students discover that adding more skills improves their profile score, leading to inflated profiles that distort matching.
-
-**Prevention:** Weight skill relevance over skill count; penalize skill inflation in scoring.
-
-**Phase to Address:** Phase 1 (Profile Generation) - Profile scoring should reward quality over quantity.
+**解决阶段：** Phase 7 — 画像评分需有明确的含义解释
 
 ---
 
-## Minor Pitfalls
+### 陷阱P3：画像生成未复用现有LLM服务
+
+**问题：** Phase 7新建LLM调用逻辑，未复用 `app/services/llm_service.py` 中的重试、超时、JSON解析重试机制。
+
+**原因：**
+- 新功能开发时直接调用DeepSeek API，绕过封装层
+- 现有llm_service接口不适合新的画像生成任务参数
+- 开发者不了解现有封装
+
+**后果：**
+- 画像生成遇到429/503错误时无重试，直接失败
+- 超时设置不当（过长或过短）
+- JSON解析失败直接报错而非重试
+- 与现有LLM调用行为不一致
+
+**预防：**
+1. **复用现有服务封装** — 所有LLM调用经过 `llm_service.py`
+2. **扩展而非修改** — 如需新参数，在llm_service中添加task_type参数
+3. **共享重试逻辑** — 画像生成复用profile任务类型的15秒超时配置
+4. **代码审查检查** — 确保无新建的直接HTTP调用LLM代码
+
+**检测（警告信号）：**
+- Phase 7出现新的LLM调用代码（非复用）
+- 画像API偶发性超时，无重试日志
+- llm_service中的重试逻辑未被调用
+
+**解决阶段：** Phase 7架构设计 — LLM调用必须通过统一服务层
 
 ---
 
-### Pitfall 12: LLM Rate Limits Cause Timeouts During Peak Usage
+## 三、人岗匹配引擎（Phase 8）
 
-**What goes wrong:** GLM-4 API rate limits cause matching/report generation to fail during demos or testing.
+### 陷阱M1：4维度量化评分与原始数据断连
 
-**Prevention:** Implement caching; batch requests; have fallback responses for rate limit errors.
+**问题：** 匹配分数计算完成，但无法向用户解释"为什么是这个分数"——分数无法追溯到具体的简历和岗位数据。
 
-**Phase to Address:** Phase 2 (Matching System) - API resilience should be built into integration layer.
+**原因：**
+- 匹配算法是黑箱，直接输出分数
+- 维度权重固定，未说明权重依据
+- 差距分析只输出数值，不引用具体技能名称
 
----
+**后果：**
+- 用户不信任匹配结果
+- 无法针对性改进（"我该提升什么技能？"）
+- 无法验证80%准确率要求
 
-### Pitfall 13: Chinese PDF Resume OCR Quality Is Poor
+**预防：1. **可解释匹配输出** — 每个维度输出 `{dimension: string, score: float, evidence: [string], matched_skills: [], gap_skills: []}`
+2. **权重文档化** — 配置文件中定义权重，注释说明依据
+3. **差距引用原文** — 差距技能必须附带其在简历和岗位要求中的原文
+4. **Top-K解释** — 前5个匹配岗位各提供一个"为什么适合"的自然语言解释
 
-**What goes wrong:** Uploaded PDF resumes that are scanned images (not digital text) produce garbled text.
+**检测（警告信号）：- API只返回分数，没有evidence字段
+- 用户询问"为什么是这个分数"时无法回答
+- 匹配分数与预期不符但无法调试
 
-**Prevention:** If OCR confidence is low, prompt user to upload digital version; flag low-confidence OCR for review.
-
-**Phase to Address:** Phase 1 (Profile Generation) - Handle OCR failures explicitly.
-
----
-
-## Phase-Specific Warnings
-
-| Phase | Primary Pitfall Risk | Mitigation |
-|-------|---------------------|------------|
-| Phase 1: Profile Generation | Resume parsing failures (Pitfall 2), Chinese language issues (Pitfall 7), Cold start (Pitfall 4) | Build robust parsing with validation; design progressive profiling |
-| Phase 2: Matching System | Hallucination (Pitfall 1), Bias (Pitfall 3), Weight over-tuning (Pitfall 10), Over-engineering graphs (Pitfall 8) | RAG pipeline first; audit fairness; prioritize matching accuracy over graph complexity |
-| Phase 3: Report Generation | Vague reports (Pitfall 5), Export failures (Pitfall 9), Accuracy definition (Pitfall 6) | Structured templates; actionability scoring; lock metrics before generation |
-| All Phases | Ambiguous accuracy metrics (Pitfall 6) | Define metrics in Phase 0 before any development |
+**解决阶段：** Phase 8 — 匹配引擎必须有完整的证据链
 
 ---
 
-## Key Research Gaps
+### 陷阱M2：向量相似度搜索与语义匹配混淆
 
-The following areas need verification through actual user testing or domain experts:
+**问题：** ChromaDB向量搜索返回"相似"岗位，但这些岗位并不适合该学生——相似度≠匹配度。
 
-1. **Actual resume format diversity** - What Chinese resume formats are most common? Which cause parsing failures?
-2. **Student expectations for report actionability** - What granularity of advice do Chinese college students expect?
-3. **Real cold-start patterns** - Do students actually engage with incomplete profiles, or abandon the system?
-4. **GLM-4 hallucination rates on career advice** - How often does GLM-4 generate factually incorrect career information?
+**原因：- 简历向量与岗位向量是不同类型数据，直接相似度比较不语义
+- "相似"可能指行业、工作内容相似，而非能力要求相似
+- 语义搜索捕捉的是词汇相似，不是能力互补
 
-**Confidence note:** This analysis is based on general knowledge of AI career systems and LLM limitations. Web search verification was unavailable. Claims should be validated with user research before finalizing roadmap priorities.
+**后果：**
+- 匹配结果表面相关但实际不适合
+- 混淆"看起来相似"和"真正匹配"
+- 可能满足80%准确率表面指标但实际无效
+
+**预防：1. **两阶段匹配** — 第一阶段ChromaDB召回Top50候选，第二阶段4维度评分精排
+2. **能力缺口驱动** — 匹配时优先找能弥补学生缺口的岗位
+3. **向量分离训练** — 简历向量和岗位向量使用不同 prompt 生成
+4. **重排序验证** — 用已知不匹配的案例测试，确认精排能过滤
+
+**检测（警告信号）：**
+- Top10召回包含明显不适合的岗位（如完全不同的行业）
+- 学生技能与匹配岗位要求几乎无重叠但分数仍高
+- 向量搜索日志显示大量跨行业匹配
+
+**解决阶段：** Phase 8 — 两阶段架构确保召回质量
 
 ---
 
-## Sources
+### 陷阱M3：冷启动学生获得无意义匹配
 
-No external sources could be verified due to WebSearch unavailability. This document relies on training knowledge about:
-- LLM hallucination patterns and mitigation (RAG, grounding)
-- Resume parsing challenges for non-English languages
-- Bias in algorithmic matching systems
-- Cold start problem in recommendation systems
-- Report generation best practices for AI-assisted career guidance
+**问题：** 简历稀疏的新用户（大一学生、无实习经历）收到"0匹配"或随机匹配结果。
 
-For verification, consider:
-- Academic papers on AI career counseling systems (IEEE, ACM)
-- Open-source resume parsing projects (e.g., ResumeParser, PyResparser)
-- GLM-4 documentation and known limitations
+**原因：**
+- 匹配算法需要丰富画像数据
+- 系统将"数据空白"误解为"无能力"
+- 未实现基于年级/阶段的默认画像
+
+**后果：- 目标用户（职业早期大学生）体验差
+- 系统对主要用户群无效
+- 可能流失早期用户
+
+**预防：1. **最小完整性阈值** — 画像 < 50%完整时，先触发补充信息流程
+2. **年级默认画像** — 根据年级预设典型技能期望（如"大一：基础课程 + 社团"）
+3. **探索模式** — 低完整性用户进入"探索岗位"而非"精确匹配"
+4. **增量匹配** — 随着用户补充信息，动态更新匹配结果
+
+**检测（警告信号）：**
+- 新用户（无经历）立即收到匹配结果
+- 画像完整性 < 30% 但匹配API正常返回
+- 大一学生与3年经验岗位匹配
+
+**解决阶段：** Phase 8 — 冷启动流程必须与匹配引擎同时设计
+
+---
+
+## 四、职业报告生成（Phase 9）
+
+### 陷阱RPT1：报告包含幻觉的职业路径建议
+
+**问题：** 生成的职业报告建议学生"3年后成为总监"或推荐不存在的认证，这些建议无法在岗位图谱中验证。
+
+**原因：**
+- LLM在生成职业路径时超出数据集中的岗位范围
+- 报告生成未基于检索到的真实职业路径数据
+- 未在建议中区分"数据支持"和"LLM推断"
+
+**后果：**
+- 学生基于虚假信息规划职业
+- 报告可操作性低（建议无法落地）
+- 违反"关键技能匹配 >= 80%"要求
+
+**预防：1. **RAG驱动报告** — 报告生成前必须检索Neo4j中真实的晋升路径
+2. **岗位数据边界** — 建议严格限制在10K岗位数据集范围内的岗位序列
+3. **置信度分级** — 报告中明确标注"有数据支持" vs "建议"
+4. **禁止无依据的时间线** — 不生成具体晋升时间线除非有图谱数据支持
+5. **报告验证函数** — 检查报告中提到的所有岗位是否存在于数据库
+
+**检测（警告信号）：**
+- 报告中提到的岗位名称不在job_profiles.json中
+- 晋升路径超出Neo4j中的实际路径
+- 建议的认证/证书名称无法验证
+
+**解决阶段：** Phase 9 — 报告生成必须基于RAG，禁止自由发挥
+
+---
+
+### 陷阱RPT2：报告结构模糊，用户无法行动
+
+**问题：** 报告包含"提高综合素质"、"加强职业技能"等无法落地执行的通用建议。
+
+**原因：**
+- 未使用结构化报告模板
+- 差距分析粒度不够（只到维度，未到具体技能）
+- LLM默认使用职业套话而非具体建议
+
+**后果：- 报告可操作性评分低于要求
+- 用户无法根据报告采取具体行动
+- 报告质量无法差异化
+
+**预防：1. **强制结构化模板** — 报告必须包含：当前位置、目标岗位、差距技能列表、每个差距的具体行动（资源+时间）、成功指标
+2. **技能级差距** — 差距分析必须具体到"Python数据分析"而非"编程能力"
+3. **行动可验证** — 每个行动有可测量的结果（"完成X课程"而非"学习X"）
+4. **时间线约束** — 建议周期不超过6个月，避免长期空想
+5. **可操作性自动评分** — 报告生成后运行评分Prompt，不合格则重生成
+
+**检测（警告信号）：**
+- 报告中出现"提高..."、"加强..."等模糊动词
+- 建议适用于任何学生（无个性化）
+- 报告生成时间异常短（<10秒）— 可能跳过了分析步骤
+
+**解决阶段：** Phase 9 — 报告模板必须强制执行
+
+---
+
+### 陷阱RPT3：报告生成超时用户无法感知进度
+
+**问题：** 报告生成需要45秒（配置的超时时间），但前端显示空白，用户以为系统卡死而刷新/重试。
+
+**原因：- 报告生成是长任务，但API立即返回
+- 前端未实现轮询或WebSocket进度通知
+- 后端无任务状态跟踪（Redis/数据库）
+
+**后果：**
+- 用户重复提交请求
+- 前端显示错误（超时后显示服务器错误）
+- 用户体验差，不知道系统是否在工作
+
+**预防：1. **任务ID模式** — `/report/generate` 返回 `task_id`，前端轮询 `/report/status/{task_id}`
+2. **进度阶段** — 状态API返回 `{"status": "parsing_resume", "progress": 25}` 等阶段信息
+3. **前端进度条** — 显示"正在分析简历... 25%"等状态
+4. **超时友好** — 45秒超时后返回部分结果 + "报告生成中，是否继续等待？"
+5. **后台处理** — 报告生成放入后台任务，前端可离开页面稍后查看
+
+**检测（警告信号）：**
+- 用户反馈"等了30秒不知道系统在干嘛"
+- 报告API超时后前端显示500错误
+- 同一用户多次重复提交报告请求
+
+**解决阶段：** Phase 9 — 长期任务必须有进度感知
+
+---
+
+## 五、前端界面（Phase 10）
+
+### 陷阱F1：前端代理配置与后端API不一致
+
+**问题：** React前端请求 `/api/resume/upload` 但后端实际路由是 `/resume/upload`，导致404。
+
+**原因：**
+- 前端开发环境使用Vite proxy，后端使用不同base URL
+- 生产环境Nginx proxy_pass配置不一致
+- 未统一API前缀规范（如都使用 `/api/v1/`）
+
+**后果：**
+- 开发环境正常，生产环境API 404
+- 刷新页面时出现CORS错误
+- 不同页面使用不同的API前缀
+
+**预防：1. **统一API前缀** — 所有后端路由使用 `/api/v1/`，前端调用统一加前缀
+2. **环境变量配置** — `VITE_API_BASE_URL=/api/v1`，开发/生产环境通过.env区分
+3. **Nginx配置同步** — proxy_pass到后端时保留 `/api/v1/` 路径
+4. **API客户端封装** — 统一的fetch wrapper，自动处理base URL
+
+**检测（警告信号）：**
+- 开发环境正常，生产环境API 404
+- 刷新页面时API失败（非首次加载）
+- 不同页面需要不同的API端口配置
+
+**解决阶段：** Phase 10 基础设施 — API路由规范必须在开发前确定
+
+---
+
+### 陷阱F2：异步上传状态不同步
+
+**问题：** 用户上传简历后立即点击"生成报告"，但后端仍在解析，导致报告基于空数据。
+
+**原因：- 前端不等异步上传完成就调用后续API
+- 上传状态（parsing/ready/error）未与UI同步
+- 后端处理队列未暴露状态给前端
+
+**后果：- 报告生成失败或质量差
+- 用户看到奇怪的结果（报告与简历不符）
+- 调试困难（无法复现）
+
+**预防：1. **状态驱动UI** — 上传后进入"解析中"状态，按钮禁用
+2. **轮询状态** — 前端每2秒轮询上传状态直到ready
+3. **后端状态API** — `/resume/status/{upload_id}` 返回 `{status: "parsing" | "ready" | "error"}`
+4. **幂等性设计** — 报告生成前检查画像完整性，不足则返回明确错误
+
+**检测（警告信号）：**
+- 用户上传后立即点击"生成报告"
+- 报告显示"简历解析中"但用户已上传5分钟
+- 报告数据与用户简历明显不符
+
+**解决阶段：** Phase 10 — 前端状态管理必须覆盖完整异步流程
+
+---
+
+### 陷阱F3：React组件大模型重渲染导致白屏
+
+**问题：** 简历上传后渲染画像雷达图或匹配结果时，页面短暂白屏或卡顿。
+
+**原因：- 大数据集（7维度评分 + 50个匹配结果）直接塞进状态
+- 雷达图组件使用低效的SVG渲染方式
+- 未实现虚拟列表，长匹配结果列表导致大量DOM节点
+
+**后果：**
+- 用户体验差（看起来像系统崩溃）
+- 低配设备上无法使用
+
+**预防：1. **数据分页/虚拟化** — 匹配结果超过20条时使用虚拟列表
+2. **图表库优化** — 使用 `recharts` 或 `bizcharts`，配置 `animation={false}` 对大数据集
+3. **骨架屏** — 数据加载中显示骨架而非空白
+4. **Web Worker** — 复杂数据处理移到Worker避免阻塞UI线程
+
+**检测（警告信号）：**
+- 渲染超过100个匹配结果时页面卡顿
+- 雷达图数据 > 10个维度时明显延迟
+- 控制台出现 "Warning: Component is taking too long"
+
+**解决阶段：** Phase 10 性能测试 — 必须在大数据集上测试UI响应
+
+---
+
+## 技术债陷阱（与现有v1.0系统集成）
+
+### 陷阱TD1：Config使用Pydantic V1风格，与V2混用
+
+**问题：** `app/config.py` 使用已废弃的嵌套 `Config` 类（Pydantic V1风格），与 `pydantic_settings` 混用导致警告或行为不一致。
+
+**原因：**
+- 原始代码在Pydantic V2迁移期间编写
+- 未更新嵌套Config类为 `model_config = ConfigDict(...)`
+
+**后果：**
+- 未来Pydantic升级可能破坏配置
+- Pydantic v2优化（性能）无法生效
+- 控制台警告影响日志可读性
+
+**预防：** Phase 6之前重构config.py：
+```python
+from pydantic_settings import SettingsConfigDict
+
+class Settings(BaseSettings):
+    deepseek_api_key: str
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
+```
+
+**解决阶段：** Phase 6 前置任务 — 技术债必须在开始新功能前清理
+
+---
+
+### 陷阱TD2：新功能未复用现有异常处理模式
+
+**问题：** Phase 6-9新增的异常处理与 `app/exceptions/llm_exceptions.py` 模式不一致，导致API错误响应格式不统一。
+
+**原因：**
+- 新增 routers 直接 raise HTTPException
+- 未复用统一的异常处理 decorator
+- 错误响应格式（{"detail": ...}）不一致
+
+**后果：**
+- 前端需要处理多种错误格式
+- 调试困难（不同API返回不同错误结构）
+- 与现有 `/llm` 和 `/health` 行为不一致
+
+**预防：1. **统一异常处理** — 复用 `app/exceptions/` 目录，扩展异常类型
+2. **统一响应格式** — 所有API错误返回 `{ "error": "code", "message": "...", "details": ... }`
+3. **exception_handler** — 在main.py中为所有新增异常注册handler
+4. **错误码规范** — RESUME_001, PROFILE_002, MATCH_003, REPORT_004 格式
+
+**检测（警告信号）：**
+- 不同API返回不同的错误JSON结构
+- 前端switch-case处理10+种错误格式
+- 新增API未注册到统一异常处理
+
+**解决阶段：** Phase 6 架构 — 错误处理必须在开发规范中定义
+
+---
+
+## 集成陷阱总结
+
+| 阶段 | 最高风险陷阱 | 预防重点 |
+|------|-------------|----------|
+| Phase 6 简历解析 | R1 文件提取失败 | 文件验证 + OCR识别 + 格式测试 |
+| Phase 7 画像生成 | P1 画像与数据断连 | 维度定义 + 证据追踪 |
+| Phase 8 匹配引擎 | M2 相似度≠匹配度 | 两阶段架构 + 精排验证 |
+| Phase 9 报告生成 | RPT1 幻觉建议 | RAG强制 + 边界约束 |
+| Phase 10 前端界面 | F1 API路由不一致 | 统一前缀 + 环境变量 |
+| 跨阶段技术债 | TD1 Config混用 | Phase 6前重构 |
+
+---
+
+## 恢复策略
+
+| 陷阱 | 恢复成本 | 恢复步骤 |
+|------|----------|----------|
+| R1 文件提取失败 | 低 | 回退到手动输入模式，用户填写表单 |
+| R2 LLM解析错误 | 中 | 标记低置信度字段，用户确认后重新生成 |
+| M2 匹配质量差 | 高 | 下线精排，回归向量搜索+规则匹配 |
+| RPT1 报告幻觉 | 高 | 过滤报告中的岗位名称，不存在则重新生成 |
+| F1 API 404 | 低 | Nginx重定向rule，修复proxy配置 |
+| TD1 Config警告 | 低 | 重构为Pydantic V2 ConfigDict，一行代码修改 |
+
+---
+
+## "Looks Done But Isn't" 检查清单
+
+- [ ] **简历上传:** 实际验证了PDF/DOCX/TXT多种格式，未只测doc
+- [ ] **简历解析:** 验证了输出JSON schema与Pydantic模型对齐
+- [ ] **画像生成:** 每个维度评分有证据引用，未只输出分数
+- [ ] **画像完整性:** 用户能看懂"完整70%但准确率50%"的含义
+- [ ] **匹配引擎:** 差距分析输出具体技能名称，未只输出维度分数
+- [ ] **冷启动:** 验证了大一新生（无经历）的匹配流程
+- [ ] **报告生成:** 验证了所有建议的岗位存在于数据库
+- [ ] **报告结构:** 确认每个建议包含时间线和成功指标
+- [ ] **前端代理:** 生产环境Nginx配置与开发环境一致
+- [ ] **异步流程:** 上传→解析→画像→匹配→报告完整流程端到端测试
+
+---
+
+## 来源
+
+由于WebSearch不可用，本文档基于：
+- 训练知识：LLM幻觉、RAG模式、简历解析挑战
+- 项目上下文：v1.0已交付代码结构、PROJECT.md约束
+- AI职业系统一般工程实践
+
+建议通过以下方式验证：
+- 实际中文简历格式测试集（至少20种）
+- Phase 6-10端到端集成测试
+- 用户可用性测试（5-10名大学生）
+
+---
+
+*Pitfalls research for: v1.1 new features integration*
+*Researched: 2026-03-30*

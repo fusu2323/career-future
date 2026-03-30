@@ -1,259 +1,257 @@
-# Technology Stack
+# Stack Research — v1.1 New Features
 
-**Project:** AI职业规划智能体 (AI Career Planning Agent)
-**Research Mode:** Stack Recommendation
-**Researched:** 2026-03-29
-**Confidence:** MEDIUM-LOW (external verification unavailable - training data only, 6-18 months stale)
-
-## IMPORTANT CAVEAT
-
-External verification via WebSearch/WebFetch/MCP tools was unavailable during research. All recommendations below are based on training data and should be validated against current official documentation before finalizing. Version numbers may be outdated.
+**Domain:** AI Career Planning Agent (resume parsing, profiling, matching, reporting, React frontend)
+**Project:** 基于AI的大学生职业规划智能体
+**Researched:** 2026-03-30
+**Confidence:** MEDIUM (WebSearch unavailable; training knowledge with known gaps flagged)
 
 ---
 
-## Recommended Stack
+## Context: What Is Already Validated (v1.0)
 
-### Core Backend Framework
+The following technologies were already selected and validated in v1.0. This document covers only the **additions** needed for v1.1. Do not re-research these:
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| **Python** | 3.11+ | Language runtime | Required for LLM ecosystem, excellent async support | HIGH |
-| **FastAPI** | 0.110+ | Web framework | Native async, Pydantic validation, automatic OpenAPI docs, ideal for AI APIs | HIGH |
-| **Uvicorn** | 0.27+ | ASGI server | Recommended ASGI server for FastAPI, production-ready | HIGH |
-| **Pydantic** | 2.x | Data validation | Built into FastAPI, schema-first development | HIGH |
-
-**Why FastAPI over alternatives (Django, Flask):**
-- Django: Overkill for this project, synchronous by default, heavier
-- Flask: Lacks native async, requires more boilerplate for type validation
-- FastAPI: Best of both worlds - async native, automatic docs, Pydantic integration
-
-### Vector Database
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **ChromaDB** | Semantic search, document embedding storage | Already in project tech stack, simple API, good for <100K vectors | MEDIUM |
-| **FAISS** | High-performance vector search | Better scalability than ChromaDB for larger datasets, Facebook-maintained | MEDIUM |
-
-**Recommendation:** Stick with **ChromaDB** for this project (10K jobs, ~100岗位 profiles). The existing codebase already uses it, and it handles this scale well. If performance issues arise at 100K+ vectors, migrate to FAISS or Qdrant.
-
-**Alternatives considered:**
-
-| Alternative | Why Not |
-|-------------|---------|
-| **Milvus** | Over-engineered for this scale, requires more infrastructure |
-| **Pinecone** | Cloud-only, unnecessary cost for offline data |
-| **Qdrant** | Viable alternative if ChromaDB has issues, better Rust performance |
-| **Weaviate** | More complex setup, less Python-friendly |
-
-### Graph Database
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **Neo4j** | Knowledge graph, career path mapping | Already in project tech stack, excellent Cypher query language, proven for career/path applications | HIGH |
-
-**Why Neo4j is correct for this project:**
-- Career paths and job transitions are inherently graph-shaped (nodes + relationships)
-- Cypher queries are natural for "find path from A to B" questions
-- Existing matching algorithms likely already model this structure
-- Project explicitly requires "岗位晋升图谱" and "换岗路径图谱"
-
-### LLM (Large Language Model)
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **GLM-4** (Zhipu AI) | Core AI reasoning, report generation | Project constraint per 赛题, excellent Chinese performance, good API | MEDIUM |
-| **Qwen-2.5** (Alibaba) | Alternative Chinese LLM | Strong Chinese NLG, open-source options available | MEDIUM |
-
-**Recommendation:** Use **GLM-4** as primary per project constraints. Have **Qwen-2.5** as backup for cost/availability issues.
-
-**API Access:**
-- GLM-4: `zhipu-openaiapi` compatible endpoint (智谱AI)
-- Qwen: DashScope API or self-hosted Qwen-2.5
-
-**Why Chinese LLMs:**
-- Project is Chinese-language career planning
-- GLM-4 and Qwen outperform GPT-4 on Chinese benchmarks
-- Cost advantage for Chinese-language content
-- Project explicitly requires GLM-4
-
-### Embedding Models
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **text-embedding-3-small** (OpenAI) | General text embedding | Good quality, cost-effective, 1536 dimensions | MEDIUM |
-| **BGE-large-zh** (FlagEmbedding) | Chinese-specialized embedding | Best Chinese semantic matching, open-source | MEDIUM |
-| **M3E** (Moka) | Chinese embedding alternative | Good balance of speed and quality for Chinese | MEDIUM |
-
-**Recommendation:** Use **BGE-large-zh** for Chinese content. If OpenAI compatibility needed, fall back to text-embedding-3-small. M3E is a lighter alternative if speed is critical.
-
-### RAG Framework
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **LangChain** | RAG orchestration, agent patterns | Mature ecosystem, good for prototype, extensive integrations | MEDIUM |
-| **LlamaIndex** | RAG-focused data ingestion | Better for complex document retrieval, more Pythonic | MEDIUM |
-| **Custom (Lite) RAG** | Simple RAG without heavy framework | Avoid framework overhead, use direct API calls | MEDIUM |
-
-**Recommendation:** For a competition project with limited time, use **Lite RAG** (direct API calls) or **LlamaIndex** if complex document hierarchy is needed. LangChain adds complexity without much benefit here.
-
-**Why avoid heavy frameworks:**
-- Competition project = limited development time
-- Framework overhead obscures what's actually happening
-- Harder to debug and optimize
-- Simple RAG is just: embed → store → retrieve → augment → generate
-
-### Frontend
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **React** + **Vite** | UI framework + build tool | Largest ecosystem, excellent AI UI component libraries | HIGH |
-| **Vue 3** + **Vite** | Alternative UI framework | Simpler learning curve, good Chinese documentation | MEDIUM |
-| **Ant Design** (React) | UI component library | Professional look, good AI dashboard components | MEDIUM |
-| **Element Plus** (Vue) | UI component library (Vue version) | Clean, professional | MEDIUM |
-| **Tailwind CSS** | Utility-first CSS | Rapid UI development, consistent design | MEDIUM |
-
-**Recommendation:** **React + Vite + Ant Design + Tailwind CSS**
-
-**Why React over Vue:**
-- Larger ecosystem for AI/ML dashboards
-- More component libraries available
-- Better for complex interactive states (matching results, reports)
-- React is more common in enterprise/AI products
-
-**Why Vue as alternative:**
-- Faster initial learning curve
-- Cleaner syntax for simple views
-- Good choice if team knows Vue already
-
-### Agent Framework (Optional)
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| **LangGraph** | Agent orchestration | Built on LangChain, good for multi-step reasoning | MEDIUM |
-| **Custom FSM** | Simple state machine | Sufficient for this use case, less overhead | MEDIUM |
-
-**Recommendation:** The career planning agent has well-defined steps (parse resume → generate profile → match → generate report). A simple FSM or custom orchestration is sufficient. LangGraph adds unnecessary complexity unless you need dynamic multi-agent workflows.
+| Component | Technology | Status |
+|-----------|------------|--------|
+| Backend framework | Python 3.11+ / FastAPI / Uvicorn / Pydantic 2.x | Validated |
+| Vector DB | ChromaDB | Validated |
+| Graph DB | Neo4j | Validated |
+| LLM | DeepSeek (deepseek-chat) via HTTP | Validated |
+| Embeddings | BGE-m3 via SiliconFlow API | Validated |
+| Async HTTP | httpx + tenacity | Validated |
 
 ---
 
-## Installation
+## v1.1 New Technology Additions
+
+### 1. Document Parsing (Python — Phase 6)
+
+**Purpose:** Extract text and structure from uploaded resumes (PDF and DOCX formats).
+
+| Library | Version | Purpose | Why Recommended |
+|---------|---------|---------|-----------------|
+| **pdfplumber** | 0.11+ | PDF text/table extraction | Best Python-native PDF parsing; preserves layout, handles tables well |
+| **pymupdf** | 1.24+ | PDF fast extraction, image extraction | Faster than pdfplumber, good for large files; complements pdfplumber |
+| **python-docx** | 1.1+ | DOCX parsing | Standard Python DOCX library; easy table/text extraction |
+
+**Installation:**
+```bash
+pip install pdfplumber pymupdf python-docx
+```
+
+**Alternative Considered:**
+
+| Our Choice | Alternative | When to Use Alternative |
+|------------|-------------|------------------------|
+| pdfplumber | PyPDF2 | PyPDF2 has slower table extraction; pdfplumber is better for structured resumes |
+| pdfplumber + pymupdf | marker (OCR) | Only if scanned PDFs are a major concern; adds GPU/OCR complexity |
+| python-docx | docx2txt | docx2txt simpler but less API control; python-docx gives structured access |
+
+**Recommendation:** Use **pdfplumber** as primary PDF parser (good table/layout handling), **pymupdf** as fallback for speed-critical paths, and **python-docx** for DOCX. Do not add OCR libraries (marker/paddleocr) unless scanned PDF handling becomes a demonstrated problem — OCR adds significant complexity for marginal gain on a competition project where most resumes are digital.
+
+---
+
+### 2. Matching Engine (No New Libraries — Phase 8)
+
+The matching engine uses existing validated infrastructure:
+- **ChromaDB** — vector similarity search for candidate job retrieval
+- **Neo4j** — career path graph traversal
+- **DeepSeek LLM** — scoring and gap analysis via structured prompting
+
+**No new Python packages needed.** The matching engine is primarily algorithmic work on top of existing services.
+
+**Potential consideration (optional):**
+
+| Library | Purpose | When to Consider |
+|---------|---------|-----------------|
+| **scikit-learn** | Additional similarity metrics (cosine, euclidean) | If vector similarity alone is insufficient |
+| **numpy** | Numerical operations for weighted scoring | Already a transitive dependency |
+
+---
+
+### 3. Report Generation (Python — Phase 9)
+
+**Purpose:** Generate structured career planning reports (path planning, action plans, evaluation metrics) and export as PDF.
+
+| Library | Version | Purpose | Why Recommended |
+|---------|---------|---------|-----------------|
+| **WeasyPrint** | 0.22+ | HTML-to-PDF generation (server-side) | Produces reliable, consistent PDF output; HTML templating is familiar and flexible |
+| **Jinja2** | 3.1+ | HTML templating for reports | Natural fit with WeasyPrint; FastAPI ecosystem staple |
+
+**Installation:**
+```bash
+pip install weasyprint jinja2
+```
+
+**Alternative Considered:**
+
+| Our Choice | Alternative | When to Use Alternative |
+|------------|-------------|------------------------|
+| WeasyPrint (server-side) | @react-pdf/renderer (client-side) | @react-pdf has React-specific learning curve; WeasyPrint is simpler for Python/FastAPI stack |
+| WeasyPrint (server-side) | pdfkit + wkhtmltopdf | pdfkit requires system wkhtmltopdf binary; WeasyPrint is pure Python, easier to deploy |
+| WeasyPrint (server-side) | reportlab | reportlab is low-level API; WeasyPrint with HTML/CSS is faster to template |
+
+**Recommendation:** Use **WeasyPrint + Jinja2** for server-side PDF generation. Write report templates in HTML/CSS (styled with inline CSS for PDF compatibility), render via WeasyPrint. This is faster to iterate on report formatting than low-level APIs and avoids browser compatibility issues with client-side PDF.
+
+**Important:** WeasyPrint requires GTK/Windows dependencies. On Windows, ensure Visual C++ redistributables are available. Test PDF generation early in Phase 9.
+
+---
+
+### 4. React Frontend (Phase 10)
+
+**Purpose:** Resume upload, student profile display, career path graph visualization, matching results, report viewing/export.
+
+The base stack (React + Vite + Ant Design + Tailwind CSS) was already recommended in v1.0 and is confirmed. The following additions are needed:
+
+#### 4a. File Upload
+
+| Library | Purpose | Why |
+|---------|---------|-----|
+| **react-dropzone** | Drag-and-drop file upload | Industry standard; handles validation, drag-drop, progress |
+
+**Installation:**
+```bash
+npm install react-dropzone
+```
+
+**Built-in alternative:** HTML5 `<input type="file">` is sufficient for simple uploads. react-dropzone adds polish and is worth the dependency for a professional-feeling upload experience.
+
+#### 4b. Graph Visualization (Career Path)
+
+| Library | Purpose | Why Recommended |
+|---------|---------|-----------------|
+| **react-force-graph** | Interactive 2D/3D force-directed graphs | Best for career path visualization; Neo4j data renders naturally as nodes + edges |
+| **@ant-design/charts** | Ant Design chart wrappers (G2Plot) | Alternative if already in Ant Design ecosystem; good for standard chart types |
+
+**Installation:**
+```bash
+npm install react-force-graph
+```
+
+**Why react-force-graph:**
+- Career paths are inherently graph-shaped (nodes = jobs, edges = promotions/transitions)
+- react-force-graph renders interactive 2D and 3D graphs with pan/zoom/click
+- Works well with Neo4j data exported as {nodes, links} JSON
+- Lightweight (~60KB) vs full D3.js (~90KB)
+
+**Alternative considered:**
+
+| Our Choice | Alternative | When to Use Alternative |
+|------------|-------------|------------------------|
+| react-force-graph | echarts-for-react | ECharts has graph support but less graph-specific interaction; better for standard charts |
+| react-force-graph | visx | Visx is lower-level D3; more control but more code; react-force-graph is faster for graph use case |
+| react-force-graph | d3 | Raw D3 gives most control; react-force-graph is sufficient abstraction for this use case |
+
+#### 4c. Charting (Student Profile Radar, Match Results)
+
+**Already covered:** Recharts is already in the v1.0 recommendations and handles radar charts, bar charts, and line charts well. No new library needed.
+
+**If Recharts proves insufficient:** @ant-design/charts provides Ant Design-compatible charting with less customization.
+
+#### 4d. PDF Export (Report Download)
+
+| Approach | Library | When to Use |
+|----------|---------|-------------|
+| Server-side (recommended) | FastAPI endpoint returns PDF via WeasyPrint | Single approach; simpler, consistent output |
+| Client-side | @react-pdf/renderer | Only if offline capability is needed |
+
+**Recommendation:** Use server-side PDF generation (WeasyPrint from Phase 9) and serve via FastAPI download endpoint. Client-side PDF adds complexity with minimal benefit for a competition project.
+
+---
+
+## Frontend Package Summary (Phase 10)
 
 ```bash
-# Core backend
-pip install fastapi uvicorn pydantic pydantic-settings
-pip install langchain langchain-community  # Optional, for RAG helpers
-pip install chromadb neo4j
-pip install httpx aiohttp  # For async API calls
+# Core frontend additions
+npm install react-dropzone react-force-graph
 
-# Chinese embedding
-pip install sentence-transformers FlagEmbedding  # BGE-large-zh
-
-# LLM clients
-pip install zhipuai  # GLM-4 SDK
-# or
-pip install dashscope  # Qwen SDK
-
-# Frontend (React)
-npm create vite@latest frontend -- --template react-ts
+# Already recommended in v1.0 (confirm installed)
 npm install antd tailwindcss postcss autoprefixer
-npm install @ant-design/icons recharts  # For AI dashboard visualization
+npm install @ant-design/icons recharts
 ```
 
 ---
 
-## Architecture Pattern: RAG + Agent
+## v1.1 Stack Summary (All New + Existing)
 
-### Recommended Pattern for Career Planning Agent
+### Complete Python Stack (Backend)
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        User Interface (React)                    │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     FastAPI Backend (Python)                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │ Resume API  │  │ Matching API│  │ Report Generation API  │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-          │                │                     │
-          ▼                ▼                     ▼
-┌─────────────────┐ ┌─────────────┐ ┌─────────────────────────────┐
-│   ChromaDB      │ │   Neo4j     │ │         LLM (GLM-4)         │
-│  (Embeddings)  │ │  (Graph)    │ │  - Profile Generation       │
-│  - Job vectors │ │  - Paths    │ │  - Matching Analysis        │
-│  - Resume text  │ │  - Relations│ │  - Report Writing           │
-└─────────────────┘ └─────────────┘ └─────────────────────────────┘
+```bash
+# Already installed (v1.0)
+pip install fastapi uvicorn pydantic pydantic-settings httpx tenacity chromadb neo4j
+
+# v1.1 additions
+pip install pdfplumber pymupdf python-docx weasyprint jinja2
 ```
 
-### Data Flow
+### Complete Node Stack (Frontend)
 
-1. **Resume Upload** → Parse → Extract skills/experience → Generate embedding
-2. **Profile Generation** → LLM analyzes resume → Structured profile JSON
-3. **Matching** → Retrieve similar job vectors (ChromaDB) → Query career paths (Neo4j) → LLM scoring
-4. **Report Generation** → LLM synthesizes all data → Formatted career report
+```bash
+# v1.0 confirmed
+npm create vite@latest frontend -- --template react-ts
+npm install antd tailwindcss postcss autoprefixer @ant-design/icons recharts
 
----
-
-## What NOT to Use and Why
-
-| Technology | Why Avoid | Instead Use |
-|------------|-----------|-------------|
-| **LangChain (full)** | Overkill, verbose, hard to debug | Direct API calls or Lite RAG |
-| **LangSmith/LangFuse** | Observability overhead, cost | Simple logging for competition |
-| **Milvus/Pinecone** | Over-engineered for 10K vectors | ChromaDB (sufficient) |
-| **Django** | Heavy, synchronous, slow development | FastAPI (lighter, async) |
-| **Next.js** | Overkill if just web dashboard | Vite + React SPA |
-| **GPT-4** | Poor Chinese cost-efficiency | GLM-4 or Qwen (per constraints) |
-| **Elasticsearch** | Complex infrastructure | Not needed for this scale |
+# v1.1 additions
+npm install react-dropzone react-force-graph
+```
 
 ---
 
-## Stack Summary
+## What NOT to Add for v1.1
 
-**Core Stack:**
-- Python 3.11+ / FastAPI / Uvicorn
-- ChromaDB (vectors) + Neo4j (graph)
-- GLM-4 (LLM) + BGE-large-zh (embeddings)
-- React + Vite + Ant Design + Tailwind CSS
-
-**Rationale:**
-- FastAPI: Async-native, Pydantic validation, minimal boilerplate
-- ChromaDB + Neo4j: Match project constraints, already selected
-- GLM-4: Project requirement (Chinese LLM)
-- React: Largest ecosystem for AI dashboards
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| **OCR libraries** (paddleocr, marker) | Adds significant complexity; most resumes are digital text | pdfplumber text extraction |
+| **Client-side PDF rendering** (@react-pdf/renderer) | Extra dependency, browser compatibility issues | Server-side WeasyPrint |
+| **Full LangChain** | Overkill for structured prompting needs | Direct DeepSeek API calls |
+| ** LlamaIndex/RAG frameworks** | Simple RAG is direct API calls | Existing httpx + prompting |
+| **Additional charting libraries** | Recharts handles all needed chart types | Only add if Recharts fails |
+| **Redux/toolkit for state** | React useState/useReducer sufficient for this scope | Simpler state management |
 
 ---
 
-## Confidence Assessment
+## Technology Decisions Summary
 
-| Component | Confidence | Reason |
-|-----------|------------|--------|
-| Backend Framework | HIGH | FastAPI is well-established, no major changes expected |
-| Vector DB | MEDIUM | ChromaDB choice is correct for scale; alternatives (FAISS) well-understood |
-| Graph DB | HIGH | Neo4j is standard, no recent disruptive alternatives |
-| Chinese LLM | MEDIUM | GLM-4 known but version/status should verify; Qwen similar |
-| Embedding | MEDIUM | BGE-large-zh is strong choice but verify current benchmarks |
-| Frontend | HIGH | React ecosystem stable, opinions are well-grounded |
-| RAG Pattern | MEDIUM | Pattern is standard; specific library versions need verification |
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| PDF parsing | pdfplumber + pymupdf | Best Python-native PDF extraction; table/layout aware |
+| DOCX parsing | python-docx | Standard, well-maintained |
+| Report generation | WeasyPrint + Jinja2 | HTML/CSS templates; reliable cross-platform PDF |
+| File upload UI | react-dropzone | Professional drag-drop; validates file types |
+| Career path visualization | react-force-graph | Graph-native rendering; node/edge model maps to Neo4j data |
+| Charting | Recharts (existing) | Already recommended; covers radar/bar/line |
+| PDF export | Server-side (WeasyPrint) | Consistent output; simpler than client-side |
+
+---
+
+## Confidence Assessment (v1.1 Additions)
+
+| Component | Confidence | Notes |
+|-----------|------------|-------|
+| Document parsing | MEDIUM | pdfplumber/python-docx are well-established; pymupdf is stable. No recent disruptive changes expected. |
+| Report generation (WeasyPrint) | MEDIUM | WeasyPrint is mature; Windows dependency can be tricky — flag as implementation concern |
+| React file upload | HIGH | react-dropzone is industry standard; no significant alternatives |
+| Graph visualization | MEDIUM | react-force-graph is strong choice but verify it handles large Neo4j result sets gracefully |
+| Frontend stack (React/Vite/AntD/Recharts) | HIGH | Already validated in v1.0 planning |
 
 ---
 
 ## Sources
 
-**Cannot verify via external tools - following sources are from training data (stale by 6-18 months):**
+**Cannot verify via external tools (WebSearch/MCP unavailable).** The following are based on training knowledge and should be verified before finalizing:
 
-- FastAPI: https://fastapi.tiangolo.com/ (verify current version)
-- ChromaDB: https://docs.trychroma.com/ (verify current status)
-- Neo4j: https://neo4j.com/docs/ (verify Cypher version)
-- GLM-4: https://github.com/THUDM/GLM-4 (verify API changes)
-- Qwen: https://github.com/QwenLM/Qwen (verify current version)
-- BGE: https://github.com/FlagOpen/FlagEmbedding (verify latest model)
-- LangChain: https://python.langchain.com/docs/ (verify current patterns)
+- pdfplumber: https://github.com/jsvine/pdfplumber (verify current version, Windows compatibility)
+- pymupdf: https://pymupdf.io/ (verify v1.24+ features)
+- python-docx: https://python-docx.readthedocs.io/ (verify current version)
+- WeasyPrint: https://doc.courtbouillon.org/weasyprint/ (verify Windows installation requirements)
+- react-force-graph: https://github.com/vasturiano/react-force-graph (verify bundle size, React 18/19 compatibility)
+- react-dropzone: https://react-dropzone.js.org/ (verify React 18/19 compatibility)
 
-**Validation Required Before Phase 1:**
-1. Verify GLM-4 API endpoint and authentication method
-2. Check ChromaDB latest version and any breaking changes
-3. Confirm BGE-large-zh is still best Chinese embedding (M3E may have improved)
-4. Verify frontend library compatibility (React 19, Vite 6, etc.)
+**Verified by project constraints (v1.0):**
+- FastAPI, ChromaDB, Neo4j, DeepSeek, BGE-m3 — already validated and in use
+- Ant Design, Recharts — confirmed in CLAUDE.md and v1.0 decisions
+
+---
+
+*v1.1 stack additions research for: AI Career Planning Agent*
+*Researched: 2026-03-30*
